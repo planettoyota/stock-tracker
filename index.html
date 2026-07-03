@@ -296,7 +296,7 @@ select.if{-webkit-appearance:none;appearance:none;background-image:url("data:ima
   <div class="ls-card">
    <span class="ls-label">Select Your Name</span>
    <select id="nameSelect" class="ls-select" onchange="this.classList.toggle('chosen',!!this.value)">
-    <option value="">Loading data...</option>
+    <option value="">Loading data…</option>
    </select>
    <div class="ls-info" id="nameInfo"></div>
    <div class="ls-err" id="nameErr"></div>
@@ -901,9 +901,32 @@ async function AGET(p) {
   var q = Object.keys(p).map(function(k) {
     return encodeURIComponent(k)+'='+encodeURIComponent(p[k]);
   }).join('&');
-  var r = await fetch(API+'?'+q);
-  var t = await r.text();
-  try { return JSON.parse(t); } catch(e) { throw new Error('Server error: '+t.substring(0,100)); }
+  var url = API+'?'+q;
+  try {
+    var ctrl=new AbortController();
+    var tid=setTimeout(function(){ctrl.abort();},10000);
+    var r=await fetch(url,{signal:ctrl.signal});
+    clearTimeout(tid);
+    var t=await r.text();
+    if(!t) throw new Error('Empty response');
+    return JSON.parse(t);
+  } catch(fe) {
+    return new Promise(function(resolve,reject){
+      var xhr=new XMLHttpRequest();
+      xhr.open('GET',url,true);
+      xhr.timeout=10000;
+      xhr.onreadystatechange=function(){
+        if(xhr.readyState!==4)return;
+        try{
+          if(!xhr.responseText)throw new Error('Empty response');
+          resolve(JSON.parse(xhr.responseText));
+        }catch(e){reject(e);}
+      };
+      xhr.ontimeout=function(){reject(new Error('Timeout'));};
+      xhr.onerror=function(){reject(new Error('Network error'));};
+      xhr.send();
+    });
+  }
 }
 
 async function APOST(payload) {
@@ -1039,7 +1062,7 @@ async function loadNames() {
   var sel = $('nameSelect');
   var info = $('nameInfo');
   var err = $('nameErr');
-  if(info) info.textContent = 'Fetching staff list...';
+  if(info) info.textContent = '';
   if(err) err.classList.remove('show');
   try {
     var d = await AGET({action:'getStaffList'});
