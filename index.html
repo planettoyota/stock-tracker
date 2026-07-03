@@ -1,0 +1,2372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#EB0A1E">
+<meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://unpkg.com https://script.google.com; connect-src *;">
+<title>Planet Toyota — Stock</title>
+<style>
+:root{
+  --red:#EB0A1E;--reds:#FFF0F0;
+  --dk:#0F1117;--nv:#1A1F3A;
+  --gn:#059669;--gns:#ECFDF5;
+  --am:#D97706;--ams:#FFFBEB;
+  --pu:#7C3AED;--pus:#EDE9FE;
+  --bl:#2563EB;--bls:#EFF6FF;
+  --tr:#EA580C;--trs:#FFF7ED;
+  --g0:#F9FAFB;--g1:#F3F4F6;--g2:#E5E7EB;--g4:#9CA3AF;--g6:#4B5563;--g8:#1F2937;
+  --bd:#E5E7EB;--sh:0 1px 3px rgba(0,0,0,.08);--r:12px;--rs:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--g1);color:var(--dk);font-size:15px;overscroll-behavior:none}
+button{cursor:pointer;font-family:inherit}
+#app{display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto;background:white;position:relative;overflow:hidden}
+
+/* LOGIN — Premium Toyota Theme */
+#loginScreen{position:fixed;inset:0;z-index:500;overflow-y:auto;overflow-x:hidden;background:#fff}
+#loginScreen::before{content:'';position:fixed;top:0;left:0;right:0;height:38vh;background:linear-gradient(150deg,#EB0A1E 0%,#9B0013 100%);z-index:0;border-radius:0 0 36px 36px}
+.ls-inner{position:relative;z-index:1;width:100%;max-width:390px;margin:0 auto;padding:0 20px 48px;display:flex;flex-direction:column;align-items:center}
+.ls-hero{width:100%;padding:36px 0 20px;display:flex;flex-direction:column;align-items:center}
+.ls-badge{width:68px;height:68px;border-radius:20px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:34px;margin-bottom:12px;box-shadow:0 6px 24px rgba(0,0,0,.15);backdrop-filter:blur(8px)}
+.ls-name{font-size:28px;font-weight:900;color:#fff;letter-spacing:-.3px;text-align:center}
+.ls-sub{font-size:13px;color:rgba(255,255,255,.85);letter-spacing:2px;text-transform:uppercase;margin-top:7px;text-align:center;font-weight:600}
+.ls-card{width:100%;background:#fff;border-radius:24px;padding:24px 20px 22px;margin-top:14px;box-shadow:0 20px 60px rgba(0,0,0,.12),0 4px 16px rgba(0,0,0,.08)}
+.ls-label{font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#9CA3AF;margin-bottom:8px;display:block}
+.ls-select{width:100%;background:#F9FAFB;border:2px solid #E5E7EB;border-radius:14px;padding:14px 44px 14px 16px;font-size:16px;font-weight:600;color:#111827;font-family:inherit;outline:none;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath fill='%23EB0A1E' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;transition:all .2s;box-shadow:inset 0 1px 2px rgba(0,0,0,.04)}
+.ls-select:focus,.ls-select.chosen{border-color:#EB0A1E;background-color:#FFF8F8;box-shadow:0 0 0 3px rgba(235,10,30,.08)}
+.ls-select option{background:#fff;color:#111827}
+.ls-info{font-size:11px;color:#9CA3AF;text-align:center;min-height:14px;margin:6px 0 16px}
+.ls-err{font-size:12px;color:#DC2626;margin-bottom:12px;display:none;line-height:1.5;background:#FEF2F2;border-radius:10px;padding:10px 14px;border:1px solid #FECACA;text-align:center}
+.ls-err.show{display:block}
+.ls-divider{height:1px;background:#F3F4F6;margin:16px 0}
+.ls-pin-label{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.ls-dots{display:flex;justify-content:center;gap:14px;margin-bottom:20px}
+.ls-dot{width:14px;height:14px;border-radius:50%;background:#E5E7EB;transition:all .25s cubic-bezier(.34,1.56,.64,1)}
+.ls-dot.on{background:#EB0A1E;transform:scale(1.4);box-shadow:0 0 0 4px rgba(235,10,30,.15)}
+.ls-pad{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;width:100%}
+.ls-btn{height:68px;border-radius:16px;border:none;background:#F9FAFB;color:#111827;font-size:26px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .12s cubic-bezier(.34,1.56,.64,1);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.ls-btn:active{background:#F3F4F6;transform:scale(.91);box-shadow:none}
+.ls-del{background:#FFF0F0;color:#EB0A1E;font-size:20px}
+.ls-del:active{background:#FFE0E0}
+.ls-clr{background:#F3F4F6;color:#6B7280;font-size:13px;font-weight:800;letter-spacing:.3px}
+.ls-status{text-align:center;min-height:22px;margin-top:12px;font-size:12px;font-weight:700;color:#EB0A1E}
+.ls-footer{text-align:center;margin-top:20px;padding-bottom:4px}
+.ls-ft{font-size:9px;color:rgba(0,0,0,.2);letter-spacing:1.2px;text-transform:uppercase;line-height:1.8}
+@keyframes ls-fade-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.ls-card{animation:ls-fade-in .4s cubic-bezier(.22,1,.36,1) both}
+.ls-hero{animation:ls-fade-in .3s cubic-bezier(.22,1,.36,1) both}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.shake{animation:shake .32s ease}
+@keyframes dot-pulse{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.loading-dots span{display:inline-block;width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.5);margin:0 2px;animation:dot-pulse 1.2s ease-in-out infinite}
+.loading-dots span:nth-child(2){animation-delay:.2s}
+.loading-dots span:nth-child(3){animation-delay:.4s}
+
+/* TOP BARS */
+#offlineBar{position:fixed;top:0;left:0;right:0;background:#F59E0B;color:#1A1A2E;font-size:12px;font-weight:700;text-align:center;padding:8px;z-index:9997;display:none}
+#sessWarnOv{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:9990;padding:20px}
+#sessWarnOv.show{display:flex}
+.sw-box{background:white;border-radius:var(--r);padding:28px 24px;width:100%;max-width:320px;text-align:center}
+
+/* HEADER */
+.hdr{background:linear-gradient(135deg,var(--dk),var(--nv));color:white;padding:10px 14px 8px;display:flex;align-items:center;gap:8px;flex-shrink:0;display:none}
+.hdr.show{display:flex}
+.hdr-name{font-size:15px;font-weight:800}
+.hdr-sub{font-size:10px;opacity:.5}
+.r-pill{font-size:10px;font-weight:800;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.4px;display:inline-block;margin-top:2px}
+.r-owner{background:#F59E0B;color:#1A1A2E}
+.r-sales-manager,.r-edp{background:var(--bl);color:white}
+.r-service-manager{background:var(--gn);color:white}
+.r-sales-team-leader{background:#F97316;color:white}
+.r-yard-staff{background:#22C55E;color:white}
+.ib{background:rgba(255,255,255,.12);border:none;color:white;width:32px;height:32px;border-radius:50%;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer}
+
+/* NAV */
+.bnav{background:white;border-top:1px solid var(--bd);display:none;flex-shrink:0}
+.bnav.show{display:flex}
+.nb{flex:1;border:none;background:none;padding:8px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--g4);font-size:10px;font-weight:600;cursor:pointer}
+.nb.on{color:var(--red)}
+.ni{font-size:20px;line-height:1}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:none}
+.content.show{display:block}
+.tab{display:none;padding:14px;padding-bottom:80px}
+.tab.on{display:block}
+
+/* CARDS & GENERAL */
+.card{background:white;border-radius:var(--r);border:1px solid var(--bd);padding:16px;margin-bottom:12px;box-shadow:var(--sh)}
+.ct{font-size:11px;font-weight:700;color:var(--g6);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px}
+.divider{height:1px;background:var(--g1);margin:12px 0}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:var(--rs);padding:13px 18px;font-size:14px;font-weight:700;width:100%;cursor:pointer}
+.btn:active{opacity:.8}
+.btn-dk{background:var(--dk);color:white}
+.btn-red{background:var(--red);color:white}
+.btn-gn{background:var(--gn);color:white}
+.btn-gy{background:var(--g1);color:var(--g8);border:1px solid var(--g2)}
+.btn-pu{background:var(--pu);color:white}
+.btn-sm{padding:8px 14px;font-size:12px}
+.btn-row{display:flex;gap:8px}.btn-row .btn{flex:1}
+.arr-btn{border:none;border-radius:var(--rs);padding:14px 16px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:10px;width:100%;margin-bottom:8px;text-align:left}
+.arr-drive{background:var(--dk);color:white}
+.arr-trailer{background:#064E3B;color:white}
+.arr-tkm{background:var(--pu);color:white}
+.ig{margin-bottom:12px}
+.il{font-size:12px;font-weight:600;color:var(--g6);margin-bottom:5px;display:block}
+.if{width:100%;border:1.5px solid var(--g2);border-radius:var(--rs);padding:11px 13px;font-size:14px;font-family:inherit;background:white;outline:none;transition:border-color .15s}
+.if:focus{border-color:var(--dk)}
+.if.ok{border-color:var(--gn);background:var(--gns)}
+.if.er{border-color:var(--red);background:var(--reds)}
+select.if{-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath fill='%239CA3AF' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.loc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.loc-tile{border:2px solid var(--g2);border-radius:var(--rs);padding:12px 8px;text-align:center;cursor:pointer;background:white;transition:all .15s}
+.loc-tile.on{border-color:var(--gn);background:var(--gns)}
+.lt-ic{font-size:20px;margin-bottom:3px}
+.lt-nm{font-size:12px;font-weight:700;color:var(--dk)}
+.loc-tile.on .lt-nm{color:var(--gn)}
+.src-row{display:flex;gap:8px;margin-bottom:8px}
+.src-btn{flex:1;border:2px solid var(--g2);border-radius:var(--rs);padding:11px;text-align:center;cursor:pointer;background:white;font-size:13px;font-weight:700;color:var(--g6);transition:all .15s}
+.src-btn.on{border-color:var(--gn);background:var(--gns);color:var(--gn)}
+.al{border-radius:var(--rs);padding:10px 12px;font-size:12px;margin-bottom:10px;display:none;line-height:1.4}
+.al.show{display:flex;align-items:flex-start;gap:6px}
+.al-info{background:var(--bls);color:var(--bl);display:flex!important}
+.al-warn{background:var(--ams);color:var(--am);display:flex!important}
+.al-err{background:var(--reds);color:var(--red)}
+.al-ok{background:var(--gns);color:var(--gn)}
+.pill{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap}
+.p-yd{background:var(--gns);color:var(--gn)}.p-ws{background:var(--bls);color:var(--bl)}
+.p-sr{background:var(--pus);color:var(--pu)}.p-tr{background:var(--trs);color:var(--tr)}
+.p-tk{background:var(--pus);color:var(--pu)}.p-al{background:#FEF3C7;color:#92400E}
+.p-fr{background:var(--gns);color:var(--gn)}
+
+/* LOADER / SUCCESS */
+#loader{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:9999}
+#loader.show{display:flex}
+.lb{background:white;border-radius:var(--r);padding:24px 32px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.spin{width:32px;height:32px;border:3px solid var(--g2);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#succScr{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:900;padding:20px}
+#succScr.show{display:flex}
+.succ-box{background:white;border-radius:var(--r);padding:28px 24px;width:100%;max-width:340px;text-align:center}
+
+/* DASHBOARD */
+.dash-hero{background:linear-gradient(135deg,var(--dk),var(--nv));border-radius:var(--r);padding:18px;margin-bottom:12px;color:white}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.sc{border-radius:var(--r);padding:14px;cursor:pointer;border:1px solid var(--bd);background:white;box-shadow:var(--sh)}
+.sc:active{opacity:.85}
+.sn{font-size:30px;font-weight:900;letter-spacing:-1px;line-height:1}
+.sl{font-size:11px;color:var(--g4);margin-top:4px;font-weight:600}
+.sc.yd .sn{color:var(--gn)}.sc.ws .sn{color:var(--bl)}.sc.sr .sn{color:var(--pu)}.sc.tr .sn{color:var(--tr)}.sc.tk .sn{color:var(--pu)}
+.age-band{border-radius:var(--r);padding:13px 14px;border:1px solid transparent;cursor:pointer;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.ab-crit{background:#FDE8EA;border-color:#FECACA}.ab-warn{background:#FFF7ED;border-color:#FED7AA}.ab-mon{background:var(--ams);border-color:#FDE68A}
+.mr{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--g1);cursor:pointer}
+.mr:last-child{border-bottom:none}
+.mi{flex:1;min-width:0}
+.mn{font-size:14px;font-weight:700}
+.mb{height:3px;background:var(--g1);border-radius:2px;margin-top:5px}
+.mf{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--red),#FF4D5E)}
+
+/* TRANSIT */
+.tc{background:linear-gradient(135deg,var(--tr),#C2410C);border-radius:var(--r);padding:16px;margin-bottom:10px;color:white}
+.tc-btn{background:white;color:var(--tr);border:none;border-radius:var(--rs);padding:10px 18px;font-size:13px;font-weight:800;margin-top:12px;cursor:pointer;width:100%}
+
+/* STOCK SEARCH */
+.s-inp{width:100%;border:1.5px solid var(--g2);border-radius:var(--rs);padding:11px 13px;font-size:14px;font-family:inherit;outline:none;margin-bottom:10px}
+.s-inp:focus{border-color:var(--dk)}
+.frow{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;scrollbar-width:none}
+.frow::-webkit-scrollbar{display:none}
+.fc{border:none;border-radius:20px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;background:var(--g1);color:var(--g6)}
+.fc.on{background:var(--dk);color:white}
+.cr{background:white;border-radius:var(--rs);padding:13px;margin-bottom:8px;border:1px solid var(--g2);box-shadow:var(--sh);cursor:pointer}
+.cr:active{opacity:.85}
+.act{border:none;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer}
+.act-mv{background:var(--dk);color:white}.act-al{background:#FEF3C7;color:#92400E}.act-fr{background:var(--reds);color:var(--red)}
+
+/* VEHICLE SCREEN */
+#VS{position:absolute;inset:0;background:var(--g1);z-index:100;display:none;flex-direction:column}
+#VS.open{display:flex}
+.vs-hdr{background:white;border-bottom:1px solid var(--bd);padding:12px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.vs-back{background:var(--g1);border:none;width:34px;height:34px;border-radius:50%;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.vs-body{flex:1;overflow-y:auto;padding:14px}
+.v-hero{background:linear-gradient(135deg,var(--dk),var(--nv));border-radius:var(--r);padding:18px;margin-bottom:12px;color:white}
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.di{background:white;border-radius:var(--rs);padding:12px;border:1px solid var(--bd)}
+.di-l{font-size:10px;font-weight:700;color:var(--g4);text-transform:uppercase;letter-spacing:.5px}
+.di-v{font-size:14px;font-weight:700;margin-top:3px}
+.hist-it{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--g1)}
+.hist-it:last-child{border-bottom:none}
+.hi-dot{width:8px;height:8px;border-radius:50%;background:var(--g2);flex-shrink:0;margin-top:4px}
+
+/* OVERLAYS */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px)}
+.ov.open{display:flex}
+.sheet{background:white;border-radius:20px 20px 0 0;width:100%;max-height:92vh;display:flex;flex-direction:column;animation:slideUp .22s cubic-bezier(.32,.72,0,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.s-hdl{width:40px;height:4px;background:var(--g2);border-radius:2px;margin:10px auto 0;flex-shrink:0}
+.s-hdr{padding:14px 18px;border-bottom:1px solid var(--g1);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.s-tit{font-size:17px;font-weight:800}
+.s-sub{font-size:12px;color:var(--g4);margin-top:3px}
+.s-cls{background:var(--g1);border:none;width:32px;height:32px;border-radius:50%;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer}
+.s-body{overflow-y:auto;padding:16px 18px 40px;flex:1}
+
+/* MODEL/COLOUR DRILL */
+.vc{background:white;border-radius:var(--r);border:1px solid var(--bd);padding:14px;margin-bottom:10px}
+.vch{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--g1)}
+.clr-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--g1);cursor:pointer}
+.clr-row:last-child{border-bottom:none}
+.clr-row:active{opacity:.75}
+.csw{width:26px;height:26px;border-radius:6px;border:2px solid rgba(0,0,0,.08);flex-shrink:0}
+.lqp{font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;display:inline-flex;gap:3px}
+.ccard{background:var(--g0);border-radius:var(--rs);padding:13px;margin-bottom:8px;border:1px solid var(--bd)}
+
+/* TRAILER */
+#TS{position:fixed;inset:0;background:var(--g1);z-index:700;display:none;flex-direction:column}
+#TS.open{display:flex}
+.ts-hdr{background:#064E3B;padding:12px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.ts-body{flex:1;overflow-y:auto;padding:14px;padding-bottom:90px}
+.ts-foot{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:white;border-top:1px solid var(--bd);padding:12px 14px;display:flex;gap:8px}
+.stepbar{display:flex;align-items:center;margin-bottom:20px}
+.stn{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.stc{width:30px;height:30px;border-radius:50%;border:2px solid var(--g2);background:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--g4)}
+.stc.done{background:#064E3B;border-color:#064E3B;color:white}
+.stc.act{border-color:#064E3B;color:#064E3B}
+.stl{font-size:9px;font-weight:600;color:var(--g4);margin-top:4px;text-transform:uppercase;letter-spacing:.4px}
+.stl.act{color:#064E3B}
+.sline{flex:1;height:2px;background:var(--g2);margin:0 4px;margin-bottom:18px}
+.sline.done{background:#064E3B}
+.tvm{background:white;border-radius:var(--rs);padding:11px;margin-bottom:8px;border:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+
+/* AUDIT */
+#AU{position:fixed;inset:0;background:var(--g1);z-index:870;display:none;flex-direction:column}
+#AU.open{display:flex}
+.au-hdr{background:var(--dk);padding:12px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.au-stats{display:flex;background:white;border-bottom:1px solid var(--bd);flex-shrink:0}
+.au-stat{flex:1;text-align:center;padding:10px 4px;border-right:1px solid var(--g1)}
+.au-stat:last-child{border-right:none}
+.au-sn{font-size:20px;font-weight:900;line-height:1}
+.au-sl{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--g4)}
+
+/* DAILY */
+.flow-card{border-radius:var(--r);padding:14px;cursor:pointer;border:1px solid var(--bd);background:white;box-shadow:var(--sh)}
+.flow-card:active{opacity:.85}
+.flow-num{font-size:30px;font-weight:900;letter-spacing:-1px;line-height:1}
+.flow-lbl{font-size:11px;color:var(--g4);margin-top:4px;font-weight:600}
+
+/* PROFILE / STAFF */
+.pi-row{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--g1);cursor:pointer}
+.pi-row:last-child{border-bottom:none}
+.pi-ic{font-size:20px;width:32px;text-align:center}
+.staff-it{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--g1)}
+.staff-it:last-child{border-bottom:none}
+.sa{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:white;flex-shrink:0}
+
+/* SCANNER */
+#scanOv{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:950;backdrop-filter:blur(3px)}
+#scanOv.open{display:flex}
+
+/* MISC */
+.rcnt{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--g1)}
+.rcnt:last-child{border-bottom:none}
+.ml-row{display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-bottom:1px solid var(--g1)}
+.ml-row:last-child{border-bottom:none}
+.empty{text-align:center;padding:32px 16px;color:var(--g4)}
+.e-ic{font-size:36px;margin-bottom:8px}
+.e-tx{font-size:14px;font-weight:600}
+.e-sb{font-size:12px;margin-top:3px}
+.mt8{margin-top:8px}.mt12{margin-top:12px}
+.hidden{display:none!important}
+.dl-btn{background:var(--dk);color:white;border:none;border-radius:var(--rs);padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.dl-btn:active{opacity:.8}
+.z3{z-index:300}.z4{z-index:400}.z5{z-index:500}.z6{z-index:600}.z8{z-index:800}.z82{z-index:820}.z85{z-index:850}.z88{z-index:880}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+ <div class="ls-inner">
+  <div class="ls-hero">
+   <div class="ls-badge">&#128663;</div>
+   <div class="ls-name">Planet Toyota</div>
+   <div class="ls-sub">Stock Tracker &middot; Narnaul</div>
+  </div>
+  <div class="ls-card">
+   <span class="ls-label">Select Your Name</span>
+   <select id="nameSelect" class="ls-select" onchange="this.classList.toggle('chosen',!!this.value)">
+    <option value="">Loading data...</option>
+   </select>
+   <div class="ls-info" id="nameInfo"></div>
+   <div class="ls-err" id="nameErr"></div>
+   <div class="ls-divider"></div>
+   <div class="ls-pin-label">
+    <span class="ls-label" style="margin-bottom:0">Enter PIN</span>
+    <div class="ls-dots">
+     <div class="ls-dot" id="d0"></div>
+     <div class="ls-dot" id="d1"></div>
+     <div class="ls-dot" id="d2"></div>
+     <div class="ls-dot" id="d3"></div>
+    </div>
+   </div>
+   <div class="ls-pad">
+    <button class="ls-btn" onclick="pk(1)">1</button>
+    <button class="ls-btn" onclick="pk(2)">2</button>
+    <button class="ls-btn" onclick="pk(3)">3</button>
+    <button class="ls-btn" onclick="pk(4)">4</button>
+    <button class="ls-btn" onclick="pk(5)">5</button>
+    <button class="ls-btn" onclick="pk(6)">6</button>
+    <button class="ls-btn" onclick="pk(7)">7</button>
+    <button class="ls-btn" onclick="pk(8)">8</button>
+    <button class="ls-btn" onclick="pk(9)">9</button>
+    <button class="ls-btn ls-clr" onclick="pc()">Clear</button>
+    <button class="ls-btn" onclick="pk(0)">0</button>
+    <button class="ls-btn ls-del" onclick="pd()">&#9003;</button>
+   </div>
+   <div class="ls-status" id="pinSt"></div>
+  </div>
+  <div class="ls-footer">
+   <div class="ls-ft">Authorised Toyota Dealer</div>
+   <div class="ls-ft">Dist. Mahendragarh &middot; Haryana</div>
+  </div>
+ </div>
+</div>
+
+<!-- OFFLINE / SESSION -->
+<div id="offlineBar">&#9888; Offline &mdash; <span id="oqc">0</span> queued</div>
+<div id="sessWarnOv"><div class="sw-box">
+ <div style="font-size:40px;margin-bottom:12px">&#8987;</div>
+ <div style="font-size:18px;font-weight:800;margin-bottom:8px">Session Expiring</div>
+ <div style="font-size:13px;color:var(--g6);margin-bottom:20px">Logging out in <span id="swCd" style="font-weight:800;color:var(--red)">5:00</span></div>
+ <button class="btn btn-dk" onclick="extSess()" style="margin-bottom:8px">Stay Logged In</button>
+ <button class="btn btn-gy" onclick="doLogout()">Logout Now</button>
+</div></div>
+
+<!-- HEADER -->
+<div class="hdr" id="HDR">
+ <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
+  <span style="font-size:18px">&#128663;</span>
+  <div><div class="hdr-name">Planet Toyota</div><div class="hdr-sub">Stock Tracker</div></div>
+ </div>
+ <div style="flex:1;text-align:center;min-width:0">
+  <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.9)" id="hdrNm"></div>
+  <div id="hdrRole" class="r-pill" style="margin-top:2px"></div>
+ </div>
+ <div style="display:flex;gap:6px;flex-shrink:0">
+  <button class="ib" onclick="openProf()">&#128100;</button>
+  <button class="ib" style="background:var(--red)" onclick="doLogout()">&#8617;</button>
+ </div>
+</div>
+
+<!-- CONTENT TABS -->
+<div class="content" id="CONT">
+ <!-- DASHBOARD -->
+ <div class="tab" id="tabDash"><div id="dashCont"><div class="empty"><div class="e-ic">&#128202;</div><div class="e-tx">Loading...</div></div></div></div>
+
+ <!-- MOVEMENT -->
+ <div class="tab" id="tabLog">
+  <div class="ct">Arrivals &amp; Registration</div>
+  <button class="arr-btn arr-drive" onclick="openGE()">&#128663; Drive Down &mdash; Single Vehicle</button>
+  <button class="arr-btn arr-trailer" onclick="openTrailer()">&#128667; Bulk Trailer Arrival</button>
+  <button class="arr-btn arr-tkm hidden" id="btnTkm" onclick="openTkm()">&#128203; Register TKM Billed Vehicle</button>
+  <div class="divider"></div>
+  <div class="ct mt8">Log Vehicle Movement</div>
+  <div class="card">
+   <div class="ig"><label class="il">Chassis No. *</label>
+    <div style="display:flex;gap:8px">
+     <input class="if" id="mvCh" type="text" placeholder="Enter chassis" style="flex:1;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+     <button class="ib" style="background:var(--dk);width:44px;height:44px;border-radius:var(--rs);flex-shrink:0" onclick="openScan('mvCh')">&#128247;</button>
+    </div>
+   </div>
+   <div class="ig"><label class="il">Move To *</label>
+    <div class="loc-grid">
+     <div class="loc-tile" id="mvL_Stockyard" onclick="mvPick(this,'Stockyard')"><div class="lt-ic">&#127963;</div><div class="lt-nm">Stockyard</div></div>
+     <div class="loc-tile" id="mvL_Workshop" onclick="mvPick(this,'Workshop')"><div class="lt-ic">&#128295;</div><div class="lt-nm">Workshop</div></div>
+     <div class="loc-tile" id="mvL_Showroom" onclick="mvPick(this,'Showroom')"><div class="lt-ic">&#127970;</div><div class="lt-nm">Showroom</div></div>
+    </div>
+   </div>
+   <div class="ig"><label class="il">Driver Name *</label><input class="if" id="mvDr" type="text" placeholder="Full name of person moving vehicle"></div>
+   <div class="ig"><label class="il">Remarks</label><input class="if" id="mvRm" type="text" placeholder="Optional"></div>
+   <div class="al al-err" id="mvErr"></div>
+   <button class="btn btn-dk" onclick="doMove()">&#128663; Dispatch to In-Transit</button>
+  </div>
+  <div class="ct mt8">Deliver to Customer</div>
+  <button class="arr-btn" style="background:#064E3B;color:white;margin-bottom:0" onclick="toggleDlv()">&#127881; Deliver Vehicle to Customer</button>
+  <div id="dlvCard" class="card hidden" style="border-top:3px solid var(--gn)">
+   <div class="al al-warn" style="display:flex">Permanently removes vehicle from stock. Use only for final customer handover.</div>
+   <div class="ig"><label class="il">Chassis No. *</label>
+    <div style="display:flex;gap:8px">
+     <input class="if" id="dlvCh" type="text" placeholder="Scan or enter chassis" style="flex:1;text-transform:uppercase" oninput="this.value=this.value.toUpperCase();dlvLookup()">
+     <button class="ib" style="background:var(--gn);width:44px;height:44px;border-radius:var(--rs);flex-shrink:0" onclick="openScan('dlvCh')">&#128247;</button>
+    </div>
+   </div>
+   <div id="dlvPrev"></div>
+   <div class="al al-err" id="dlvErr"></div>
+   <button class="btn btn-gn" onclick="doDeliver()">&#127881; Confirm Delivery</button>
+  </div>
+  <div class="ct mt8">Recent Movements</div>
+  <div class="card" id="recentList"><div class="empty"><div class="e-tx">No recent movements</div></div></div>
+  <div class="divider"></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+   <div class="ct" style="margin-bottom:0">In Transit</div>
+   <button class="btn btn-gy btn-sm" style="width:auto" onclick="loadTransits()">&#8635; Refresh</button>
+  </div>
+  <button class="btn btn-dk" style="margin-bottom:12px" onclick="openScan('rcvScan')">&#128247; Scan to Receive</button>
+  <div id="transitList"><div class="empty"><div class="e-ic">&#128667;</div><div class="e-tx">Loading...</div></div></div>
+ </div>
+
+ <!-- STOCK SEARCH -->
+ <div class="tab" id="tabStock">
+  <input class="s-inp" id="sQ" type="text" placeholder="Search chassis, model, colour, customer..." oninput="renderStock()">
+  <div class="frow">
+   <button class="fc on" onclick="setF('ALL',this)">All</button>
+   <button class="fc" onclick="setF('Stockyard',this)">&#127963; Stockyard</button>
+   <button class="fc" onclick="setF('Workshop',this)">&#128295; Workshop</button>
+   <button class="fc" onclick="setF('Showroom',this)">&#127970; Showroom</button>
+   <button class="fc" onclick="setF('In Transit',this)">&#128667; Transit</button>
+   <button class="fc" onclick="setF('TKM Billed',this)">&#128203; TKM Billed</button>
+   <button class="fc" onclick="setF('Allocated',this)">&#128278; Allocated</button>
+  </div>
+  <div id="stockList"><div class="empty"><div class="e-ic">&#128269;</div><div class="e-tx">Loading...</div></div></div>
+  <div id="dlRow" style="display:none;margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+   <button class="dl-btn" onclick="dlPDF()">&#128438; PDF</button>
+   <button class="dl-btn" style="background:var(--gn)" onclick="dlExcel()">&#128209; Excel</button>
+  </div>
+ </div>
+
+ <!-- DAILY -->
+ <div class="tab" id="tabDaily">
+  <div class="card">
+   <label class="il">Select Date</label>
+   <div style="display:flex;gap:8px;align-items:center">
+    <input class="if" id="dailyDate" type="date" style="flex:1" onchange="loadDaily()">
+    <button class="btn btn-dk btn-sm" style="width:auto;padding:11px 16px" onclick="setDailyToday()">Today</button>
+   </div>
+  </div>
+  <div id="dailyCont"><div class="empty"><div class="e-ic">&#128197;</div><div class="e-tx">Select a date above</div></div></div>
+ </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bnav" id="BNAV">
+ <button class="nb hidden" id="navDash" onclick="goTab('Dash')"><span class="ni">&#128202;</span>Dashboard</button>
+ <button class="nb hidden" id="navLog" onclick="goTab('Log')"><span class="ni">&#128663;</span>Movement</button>
+ <button class="nb hidden" id="navStock" onclick="goTab('Stock')"><span class="ni">&#128269;</span>Search</button>
+ <button class="nb hidden" id="navDaily" onclick="goTab('Daily')"><span class="ni">&#128197;</span>Daily</button>
+ <button class="nb hidden" id="navAudit" onclick="openAuditSetup()"><span class="ni">&#128270;</span>Audit</button>
+</div>
+
+<!-- VEHICLE SCREEN -->
+<div id="VS">
+ <div class="vs-hdr"><button class="vs-back" onclick="closeVS()">&#8592;</button><div style="font-size:16px;font-weight:800;flex:1" id="vsTitle">Vehicle</div></div>
+ <div class="vs-body" id="vsBody"></div>
+</div>
+
+<!-- OVERLAYS -->
+<!-- Gate Entry -->
+<div class="ov z3" id="geOL" onclick="if(event.target===this)closeOL('geOL')">
+ <div class="sheet"><div class="s-hdl"></div>
+ <div class="s-hdr"><div><div class="s-tit">&#128663; Gate Entry</div><div class="s-sub">Single vehicle drive-down arrival</div></div><button class="s-cls" onclick="closeOL('geOL')">&#10005;</button></div>
+ <div class="s-body">
+  <div class="ig"><label class="il">Source *</label><div class="src-row"><div class="src-btn on" id="geSrc_TKM" onclick="geSrc('TKM')">TKM</div><div class="src-btn" id="geSrc_CoDealer" onclick="geSrc('Co-Dealer')">Co-Dealer</div></div><input class="if hidden" id="geCoDlr" type="text" placeholder="Co-dealer name"></div>
+  <div class="ig"><label class="il">Chassis No. *</label><div style="display:flex;gap:8px"><input class="if" id="geCh" type="text" placeholder="Chassis number" style="flex:1;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"><button class="ib" style="background:var(--dk);width:44px;height:44px;border-radius:var(--rs);flex-shrink:0" onclick="openScan('geCh')">&#128247;</button></div></div>
+  <div class="ig"><label class="il">Model *</label><select class="if" id="geModel" onchange="geDD('Variant')"><option value="">-- Select --</option></select></div>
+  <div class="ig"><label class="il">Variant *</label><select class="if" id="geVariant" onchange="geDD('Fuel')"><option value="">--</option></select></div>
+  <div class="ig"><label class="il">Fuel *</label><select class="if" id="geFuel" onchange="geDD('Colour')"><option value="">--</option></select></div>
+  <div class="ig"><label class="il">Colour *</label><select class="if" id="geColour" onchange="geDD('Interior')"><option value="">--</option></select></div>
+  <div class="ig"><label class="il">Interior *</label><select class="if" id="geInterior" onchange="geDD('Suffix')"><option value="">--</option></select></div>
+  <div class="ig"><label class="il">Suffix (auto)</label><input class="if" id="geSuffix" readonly></div>
+  <div class="ig"><label class="il">Received At *</label><div class="loc-grid">
+   <div class="loc-tile on" id="geLoc_Stockyard" onclick="geLoc(this,'Stockyard')"><div class="lt-ic">&#127963;</div><div class="lt-nm">Stockyard</div></div>
+   <div class="loc-tile" id="geLoc_Workshop" onclick="geLoc(this,'Workshop')"><div class="lt-ic">&#128295;</div><div class="lt-nm">Workshop</div></div>
+   <div class="loc-tile" id="geLoc_Showroom" onclick="geLoc(this,'Showroom')"><div class="lt-ic">&#127970;</div><div class="lt-nm">Showroom</div></div>
+  </div></div>
+  <div class="ig"><label class="il">Driver Name *</label><input class="if" id="geDriver" type="text" placeholder="TKM transporter driver"></div>
+  <div class="ig"><label class="il">TKM Dispatch Date</label><input class="if" id="geDispatch" type="date"></div>
+  <div class="ig"><label class="il">Remarks</label><input class="if" id="geRem" type="text" placeholder="Optional"></div>
+  <div class="al al-err" id="geErr"></div>
+  <button class="btn btn-dk" onclick="confirmGE()">&#10003; Register Arrival</button>
+ </div></div>
+</div>
+
+<!-- TKM Billed -->
+<div class="ov z3" id="tkmOL" onclick="if(event.target===this)closeOL('tkmOL')">
+ <div class="sheet"><div class="s-hdl"></div>
+ <div class="s-hdr"><div class="s-tit">&#128203; Register TKM Billed</div><button class="s-cls" onclick="closeOL('tkmOL')">&#10005;</button></div>
+ <div class="s-body">
+  <div class="al al-info">Vehicle billed by TKM but not yet physically arrived.</div>
+  <div class="ig"><label class="il">Chassis No. *</label><div style="display:flex;gap:8px"><input class="if" id="tbCh" type="text" placeholder="Chassis" style="flex:1;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"><button class="ib" style="background:var(--dk);width:44px;height:44px;border-radius:var(--rs);flex-shrink:0" onclick="openScan('tbCh')">&#128247;</button></div></div>
+  <div class="ig"><label class="il">Model *</label><select class="if" id="tbModel" onchange="tbDD('Variant')"><option value="">--</option></select></div>
+  <div class="ig"><label class="il">Variant *</label><select class="if" id="tbVariant" onchange="tbDD('Fuel')"><option value="">--</option></select></div>
+  <div class="ig"><label class="il">Fuel *</label><select class="if" id="tbFuel" onchange="tbDD('Colour')"><option value="">--</option></select></div>
+  <div class="ig"><label class="il">Colour *</label><select class="if" id="tbColour" onchange="tbDD('Interior')"><option value="">--</option></select></div>
+  <div class="ig"><label class="il">Interior *</label><select class="if" id="tbInterior" onchange="tbDD('Suffix')"><option value="">--</option></select></div>
+  <div class="ig"><label class="il">Suffix (auto)</label><input class="if" id="tbSuffix" readonly></div>
+  <div class="ig"><label class="il">Billing Date *</label><input class="if" id="tbDate" type="date"></div>
+  <div class="ig"><label class="il">TKM Invoice No.</label><input class="if" id="tbInv" type="text" placeholder="Optional"></div>
+  <div class="al al-err" id="tbErr"></div>
+  <button class="btn btn-pu" onclick="confirmTkm()">&#128203; Register TKM Billed</button>
+ </div></div>
+</div>
+
+<!-- Alloc -->
+<div class="ov z3" id="allocOL" onclick="if(event.target===this)closeOL('allocOL')">
+ <div class="sheet"><div class="s-hdl"></div>
+ <div class="s-hdr"><div class="s-tit" id="allocTitle">Allocate Vehicle</div><button class="s-cls" onclick="closeOL('allocOL')">&#10005;</button></div>
+ <div class="s-body">
+  <div class="v-hero" id="allocCard" style="margin-bottom:14px"></div>
+  <div class="ig"><label class="il">Customer Name *</label><input class="if" id="alcCust" type="text" placeholder="Full name"></div>
+  <div class="ig"><label class="il">Booking Ref</label><input class="if" id="alcRef" type="text" placeholder="Optional"></div>
+  <div class="ig"><label class="il">Expected Delivery Date *</label><input class="if" id="alcDate" type="date"></div>
+  <div class="ig"><label class="il">Remarks</label><input class="if" id="alcRem" type="text" placeholder="Finance, exchange..."></div>
+  <div class="al al-err" id="alcErr"></div>
+  <button class="btn btn-dk" onclick="confirmAlloc()">&#10003; Allocate</button>
+ </div></div>
+</div>
+
+<!-- Receive -->
+<div class="ov z3" id="rcvOL" onclick="if(event.target===this)closeOL('rcvOL')">
+ <div class="sheet"><div class="s-hdl"></div>
+ <div class="s-hdr"><div class="s-tit">&#128229; Confirm Receipt</div><button class="s-cls" onclick="closeOL('rcvOL')">&#10005;</button></div>
+ <div class="s-body">
+  <div class="v-hero" id="rcvCard" style="margin-bottom:14px"></div>
+  <div class="ig"><label class="il">Driver Name *</label><input class="if" id="rcvDr" type="text" placeholder="Who brought it?"></div>
+  <div class="ig"><label class="il">Condition Notes</label><input class="if" id="rcvCond" type="text" placeholder="Any damage?"></div>
+  <div class="al al-err" id="rcvErr"></div>
+  <button class="btn btn-gn" onclick="confirmRcv()">&#10003; Mark as Received</button>
+ </div></div>
+</div>
+
+<!-- Sold -->
+<div class="ov z3" id="soldOL" onclick="if(event.target===this)closeOL('soldOL')">
+ <div class="sheet"><div class="s-hdl"></div>
+ <div class="s-hdr"><div class="s-tit">&#9870; Mark as Sold</div><button class="s-cls" onclick="closeOL('soldOL')">&#10005;</button></div>
+ <div class="s-body">
+  <div class="al al-info">Vehicle stays in stock as Sold-Not Delivered until handover.</div>
+  <div class="v-hero" id="soldCard" style="margin-bottom:14px"></div>
+  <div class="ig"><label class="il">Booking Ref / Customer *</label><input class="if" id="soldRef" type="text" placeholder="e.g. BK-2026-001"></div>
+  <div class="ig"><label class="il">Remarks</label><input class="if" id="soldRem" type="text" placeholder="Finance, insurance..."></div>
+  <div class="al al-err" id="soldErr"></div>
+  <button class="btn btn-dk" onclick="confirmSold()">&#10003; Confirm Sold</button>
+ </div></div>
+</div>
+
+<!-- Model Drill -->
+<div class="ov z4" id="mdOL" onclick="if(event.target===this)closeOL('mdOL')">
+ <div class="sheet"><div class="s-hdl"></div>
+ <div class="s-hdr"><div><div class="s-tit" id="mdTitle"></div><div class="s-sub" id="mdSub"></div></div><button class="s-cls" onclick="closeOL('mdOL')">&#10005;</button></div>
+ <div class="s-body" id="mdBody"></div></div>
+</div>
+
+<!-- Colour Drill -->
+<div class="ov z5" id="cdOL" onclick="if(event.target===this)closeOL('cdOL')">
+ <div class="sheet"><div class="s-hdl"></div>
+ <div class="s-hdr"><div><div class="s-tit" id="cdTitle"></div><div class="s-sub" id="cdSub"></div></div><button class="s-cls" onclick="closeOL('cdOL')">&#10005;</button></div>
+ <div class="s-body" id="cdBody"></div></div>
+</div>
+
+<!-- TKM List -->
+<div class="ov z3" id="tkmListOL" onclick="if(event.target===this)closeOL('tkmListOL')">
+ <div class="sheet"><div class="s-hdl"></div>
+ <div class="s-hdr"><div class="s-tit">&#128203; TKM Billed &#8212; Not Arrived</div><button class="s-cls" onclick="closeOL('tkmListOL')">&#10005;</button></div>
+ <div class="s-body" id="tkmListBody"></div></div>
+</div>
+
+<!-- Age Drill -->
+<div class="ov z82" id="ageOL" onclick="if(event.target===this)closeOL('ageOL')">
+ <div class="sheet"><div class="s-hdl"></div>
+ <div class="s-hdr"><div><div class="s-tit" id="ageTitle"></div><div class="s-sub" id="ageSub"></div></div><button class="s-cls" onclick="closeOL('ageOL')">&#10005;</button></div>
+ <div class="s-body" id="ageBody"></div></div>
+</div>
+
+<!-- Profile -->
+<div class="ov z8" id="profOL" onclick="if(event.target===this)closeOL('profOL')">
+ <div class="sheet"><div class="s-hdl"></div>
+ <div class="s-hdr"><div><div class="s-tit" id="profNm"></div><div class="s-sub" id="profRl"></div></div><button class="s-cls" onclick="closeOL('profOL')">&#10005;</button></div>
+ <div class="s-body">
+  <div class="pi-row hidden" id="piStaff" onclick="closeOL('profOL');openStaff()"><span class="pi-ic">&#128101;</span><span style="font-size:14px;font-weight:600">Manage Staff</span></div>
+  <div class="pi-row hidden" id="piAudit" onclick="closeOL('profOL');openAuditSetup()"><span class="pi-ic">&#128270;</span><span style="font-size:14px;font-weight:600">Stock Audit</span></div>
+  <div class="pi-row" onclick="closeOL('profOL');openMovLog()"><span class="pi-ic">&#128203;</span><span style="font-size:14px;font-weight:600">Movement Log</span></div>
+  <div class="pi-row hidden" id="piAllocAge" onclick="closeOL('profOL');openAllocAge()"><span class="pi-ic">&#9203;</span><span style="font-size:14px;font-weight:600">Allocation Aging</span></div>
+  <div class="pi-row" onclick="closeOL('profOL');openCPin()"><span class="pi-ic">&#128273;</span><span style="font-size:14px;font-weight:600">Change PIN</span></div>
+  <div class="pi-row" onclick="doLogout()"><span class="pi-ic">&#8617;</span><span style="font-size:14px;font-weight:600">Logout</span></div>
+ </div></div>
+</div>
+
+<!-- Staff -->
+<div class="ov z6" id="staffOL" onclick="if(event.target===this)closeOL('staffOL')">
+ <div class="sheet"><div class="s-hdl"></div>
+ <div class="s-hdr"><div class="s-tit">&#128101; Staff Management</div><button class="s-cls" onclick="closeOL('staffOL')">&#10005;</button></div>
+ <div class="s-body">
+  <div class="card" style="margin-bottom:14px">
+   <div class="ct" id="sfTitle">Add Staff</div>
+   <div class="ig"><label class="il">Full Name *</label><input class="if" id="sfName" type="text" placeholder="e.g. Ashok Kumar"></div>
+   <div class="ig"><label class="il">Role *</label><select class="if" id="sfRole"><option value="">-- Select --</option><option>Owner</option><option>Sales Manager</option><option>Service Manager</option><option>EDP</option><option>Sales Team Leader</option><option>Yard Staff</option></select></div>
+   <div class="ig"><label class="il" id="sfPinLbl">PIN (4 digits) *</label><input class="if" id="sfPin" type="tel" maxlength="4" placeholder="4-digit PIN" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,4)"></div>
+   <input type="hidden" id="sfRow">
+   <div class="al al-err" id="sfErr"></div>
+   <div class="al al-ok" id="sfOk"></div>
+   <div class="btn-row mt8"><button class="btn btn-gn" style="flex:2" onclick="saveStaff()">&#10003; Save</button><button class="btn btn-gy" style="flex:1" onclick="resetSF()">Clear</button></div>
+  </div>
+  <div class="ct">Current Staff</div>
+  <div id="staffList"><div class="empty"><div class="e-tx">Loading...</div></div></div>
+ </div></div>
+</div>
+
+<!-- Change PIN -->
+<div class="ov z8" id="cpOL" onclick="if(event.target===this)closeOL('cpOL')">
+ <div class="sheet"><div class="s-hdl"></div>
+ <div class="s-hdr"><div class="s-tit">&#128273; Change PIN</div><button class="s-cls" onclick="closeOL('cpOL')">&#10005;</button></div>
+ <div class="s-body">
+  <div class="ig"><label class="il">Current PIN *</label><input class="if" id="cpOld" type="tel" maxlength="4" placeholder="Current PIN" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,4)"></div>
+  <div class="ig"><label class="il">New PIN *</label><input class="if" id="cpNew" type="tel" maxlength="4" placeholder="New 4-digit PIN" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,4)"></div>
+  <div class="ig"><label class="il">Confirm New PIN *</label><input class="if" id="cpCnf" type="tel" maxlength="4" placeholder="Repeat new PIN" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,4)"></div>
+  <div class="al al-err" id="cpErr"></div>
+  <div class="al al-ok" id="cpOk"></div>
+  <button class="btn btn-dk" onclick="confirmCPin()">&#128273; Update PIN</button>
+ </div></div>
+</div>
+
+<!-- Movement Log -->
+<div class="ov z82" id="mlOL" onclick="if(event.target===this)closeOL('mlOL')">
+ <div class="sheet"><div class="s-hdl"></div>
+ <div class="s-hdr"><div><div class="s-tit">&#128203; Movement Log</div><div class="s-sub" id="mlSub">Select a date</div></div><button class="s-cls" onclick="closeOL('mlOL')">&#10005;</button></div>
+ <div class="s-body">
+  <div style="display:flex;gap:8px;margin-bottom:12px"><input class="if" id="mlDate" type="date" style="flex:1" onchange="loadML()"><button class="btn btn-dk btn-sm" style="width:auto;padding:0 14px" onclick="mlToday()">Today</button></div>
+  <input class="if" id="mlQ" type="text" placeholder="Filter chassis or staff..." oninput="renderML()" style="margin-bottom:12px">
+  <div class="frow" style="margin-bottom:12px">
+   <button class="fc on" onclick="mlType('ALL',this)">All</button>
+   <button class="fc" onclick="mlType('dispatch',this)">Dispatch</button>
+   <button class="fc" onclick="mlType('receive',this)">Receive</button>
+   <button class="fc" onclick="mlType('arrival',this)">Arrival</button>
+   <button class="fc" onclick="mlType('delivery',this)">Delivery</button>
+  </div>
+  <div id="mlList"><div class="empty"><div class="e-tx">Select a date</div></div></div>
+ </div></div>
+</div>
+
+<!-- Alloc Aging -->
+<div class="ov z82" id="allocAgeOL" onclick="if(event.target===this)closeOL('allocAgeOL')">
+ <div class="sheet"><div class="s-hdl"></div>
+ <div class="s-hdr"><div><div class="s-tit">&#9203; Allocation Aging</div><div class="s-sub">Oldest allocations first</div></div><button class="s-cls" onclick="closeOL('allocAgeOL')">&#10005;</button></div>
+ <div class="s-body" id="allocAgeBody"></div></div>
+</div>
+
+<!-- Audit Setup -->
+<div class="ov z85" id="auSetupOL" onclick="if(event.target===this)closeOL('auSetupOL')">
+ <div class="sheet"><div class="s-hdl"></div>
+ <div class="s-hdr"><div><div class="s-tit">&#128270; Stock Audit</div><div class="s-sub">Physical verification</div></div><button class="s-cls" onclick="closeOL('auSetupOL')">&#10005;</button></div>
+ <div class="s-body">
+  <div class="al al-info">Scan or tick chassis as Found. Missing vehicles flagged at end.</div>
+  <div style="text-align:right;margin-bottom:8px"><button onclick="closeOL('auSetupOL');loadAuHist();openOL('auHistOL')" style="background:none;border:none;color:var(--bl);font-size:12px;font-weight:700;cursor:pointer">Past Audits &#8250;</button></div>
+  <div class="ig"><label class="il">Scope *</label><div class="loc-grid">
+   <div class="loc-tile on" id="auSc_ALL" onclick="auScope(this,'ALL')"><div class="lt-ic">&#127981;</div><div class="lt-nm">Full Dealership</div></div>
+   <div class="loc-tile" id="auSc_Stockyard" onclick="auScope(this,'Stockyard')"><div class="lt-ic">&#127963;</div><div class="lt-nm">Stockyard</div></div>
+   <div class="loc-tile" id="auSc_Workshop" onclick="auScope(this,'Workshop')"><div class="lt-ic">&#128295;</div><div class="lt-nm">Workshop</div></div>
+   <div class="loc-tile" id="auSc_Showroom" onclick="auScope(this,'Showroom')"><div class="lt-ic">&#127970;</div><div class="lt-nm">Showroom</div></div>
+  </div></div>
+  <div class="card" style="background:var(--g0)" id="auSetupSum">Select scope</div>
+  <button class="btn btn-dk mt12" onclick="startAudit()">&#10003; Start Audit</button>
+ </div></div>
+</div>
+
+<!-- Audit Screen -->
+<div id="AU">
+ <div class="au-hdr">
+  <button onclick="exitAudit()" style="background:rgba(255,255,255,.15);border:none;color:white;width:34px;height:34px;border-radius:50%;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer">&#8592;</button>
+  <div style="flex:1"><div style="font-size:15px;font-weight:800;color:white" id="auTitle">Audit</div><div style="font-size:11px;color:rgba(255,255,255,.5)" id="auSub"></div></div>
+ </div>
+ <div style="padding:12px 14px;background:var(--dk);flex-shrink:0"><button class="btn btn-gn" style="font-size:15px;padding:14px" onclick="openScan('auScan')">&#128247; Scan to Mark Found</button></div>
+ <div class="au-stats">
+  <div class="au-stat"><div class="au-sn" style="color:var(--gn)" id="auFound">0</div><div class="au-sl">Found</div></div>
+  <div class="au-stat"><div class="au-sn" style="color:var(--g4)" id="auPend">0</div><div class="au-sl">Pending</div></div>
+  <div class="au-stat"><div class="au-sn" style="color:var(--red)" id="auExtra">0</div><div class="au-sl">Unexpected</div></div>
+  <div class="au-stat"><div class="au-sn" style="color:var(--dk)" id="auTotal">0</div><div class="au-sl">Total</div></div>
+ </div>
+ <div style="padding:10px 14px;background:white;border-bottom:1px solid var(--bd);display:flex;gap:8px;flex-shrink:0">
+  <input class="if" id="auManual" type="text" placeholder="Type chassis to mark found" style="flex:1;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()" onkeypress="if(event.key==='Enter')auManTick()">
+  <button class="btn btn-gn btn-sm" style="width:auto;padding:0 16px;height:44px" onclick="auManTick()">&#10003;</button>
+ </div>
+ <div class="frow" style="padding:10px 14px 6px;background:white;border-bottom:1px solid var(--bd);flex-shrink:0;scrollbar-width:none">
+  <button class="fc on" onclick="auFil('ALL',this)">All</button>
+  <button class="fc" onclick="auFil('PENDING',this)">Pending</button>
+  <button class="fc" onclick="auFil('FOUND',this)">Found</button>
+  <button class="fc" onclick="auFil('EXTRA',this)">Unexpected</button>
+ </div>
+ <div style="flex:1;overflow-y:auto;padding:12px 14px 100px" id="auList"></div>
+ <div style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:white;border-top:1px solid var(--bd);padding:12px 14px">
+  <button class="btn btn-dk" onclick="finishAudit()">&#127919; Finish &amp; Submit Audit</button>
+ </div>
+</div>
+
+<!-- Audit Result -->
+<div class="ov z88" id="auResOL" onclick="if(event.target===this)closeOL('auResOL')">
+ <div class="sheet"><div class="s-hdl"></div>
+ <div class="s-hdr"><div class="s-tit">Audit Summary</div><button class="s-cls" onclick="closeOL('auResOL')">&#10005;</button></div>
+ <div class="s-body" id="auResBody"></div></div>
+</div>
+
+<!-- Audit History -->
+<div class="ov z85" id="auHistOL" onclick="if(event.target===this)closeOL('auHistOL')">
+ <div class="sheet"><div class="s-hdl"></div>
+ <div class="s-hdr"><div class="s-tit">Past Audits</div><button class="s-cls" onclick="closeOL('auHistOL')">&#10005;</button></div>
+ <div class="s-body" id="auHistBody"></div></div>
+</div>
+
+<!-- Daily Drill -->
+<div class="ov z5" id="ddOL" onclick="if(event.target===this)closeOL('ddOL')">
+ <div class="sheet"><div class="s-hdl"></div>
+ <div class="s-hdr"><div><div class="s-tit" id="ddTitle"></div><div class="s-sub" id="ddSub"></div></div><button class="s-cls" onclick="closeOL('ddOL')">&#10005;</button></div>
+ <div class="s-body" id="ddBody"></div></div>
+</div>
+
+<!-- Trailer -->
+<div id="TS">
+ <div class="ts-hdr"><button style="background:rgba(255,255,255,.2);border:none;color:white;width:34px;height:34px;border-radius:50%;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="tsBack()">&#8592;</button><div style="font-size:16px;font-weight:800;color:white;margin-left:8px">&#128667; Bulk Trailer Arrival</div></div>
+ <div class="ts-body">
+  <div class="stepbar">
+   <div class="stn"><div class="stc act" id="tsN1">1</div><div class="stl act" id="tsL1">Trailer</div></div>
+   <div class="sline" id="tsLn1"></div>
+   <div class="stn"><div class="stc" id="tsN2">2</div><div class="stl" id="tsL2">Vehicles</div></div>
+   <div class="sline" id="tsLn2"></div>
+   <div class="stn"><div class="stc" id="tsN3">3</div><div class="stl" id="tsL3">Confirm</div></div>
+  </div>
+  <div id="tsS1">
+   <div class="card">
+    <div class="ct">Trailer Details</div>
+    <div class="ig"><label class="il">Source *</label><div class="src-row"><div class="src-btn on" id="tsSrc_TKM" onclick="tsSrc('TKM')">TKM</div><div class="src-btn" id="tsSrc_CoDealer" onclick="tsSrc('Co-Dealer')">Co-Dealer</div></div><input class="if hidden" id="tsCoDlr" type="text" placeholder="Co-dealer name"></div>
+    <div class="ig"><label class="il">Trailer No. *</label><input class="if" id="tsTrailer" type="text" placeholder="e.g. HR 55 AA 1234" oninput="this.value=this.value.toUpperCase()"></div>
+    <div class="ig"><label class="il">Transporter *</label><input class="if" id="tsTransp" type="text" placeholder="e.g. TCI Logistics"></div>
+    <div class="ig"><label class="il">Driver Name *</label><input class="if" id="tsDrvNm" type="text" placeholder="Driver full name"></div>
+    <div class="ig"><label class="il">Driver Mobile *</label><input class="if" id="tsDrvMob" type="tel" maxlength="10" placeholder="10-digit mobile" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
+    <div class="ig"><label class="il">Arrival Date &amp; Time *</label><input class="if" id="tsDT" type="datetime-local"></div>
+    <div class="ig"><label class="il">Received At *</label><div class="loc-grid">
+     <div class="loc-tile on" id="tsLoc_Stockyard" onclick="tsLoc(this,'Stockyard')"><div class="lt-ic">&#127963;</div><div class="lt-nm">Stockyard</div></div>
+     <div class="loc-tile" id="tsLoc_Workshop" onclick="tsLoc(this,'Workshop')"><div class="lt-ic">&#128295;</div><div class="lt-nm">Workshop</div></div>
+     <div class="loc-tile" id="tsLoc_Showroom" onclick="tsLoc(this,'Showroom')"><div class="lt-ic">&#127970;</div><div class="lt-nm">Showroom</div></div>
+    </div></div>
+    <div class="ig"><label class="il">Remarks</label><input class="if" id="tsRem" type="text" placeholder="Optional"></div>
+    <div class="al al-err" id="tsS1Err"></div>
+   </div>
+  </div>
+  <div id="tsS2" class="hidden">
+   <div class="card" id="tsBanner" style="background:#064E3B;color:white;border-color:#064E3B;margin-bottom:12px"></div>
+   <div id="tsVList"></div>
+   <div class="card">
+    <div class="ct" id="tsAddTit">Add Vehicle #1</div>
+    <div class="ig"><label class="il">Chassis *</label><div style="display:flex;gap:8px"><input class="if" id="tvCh" type="text" placeholder="Chassis" style="flex:1;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"><button class="ib" style="background:var(--dk);width:44px;height:44px;border-radius:var(--rs);flex-shrink:0" onclick="openScan('tvCh')">&#128247;</button></div></div>
+    <div class="ig"><label class="il">Model *</label><select class="if" id="tvModel" onchange="tvDD('Variant')"><option value="">--</option></select></div>
+    <div class="ig"><label class="il">Variant *</label><select class="if" id="tvVariant" onchange="tvDD('Fuel')"><option value="">--</option></select></div>
+    <div class="ig"><label class="il">Fuel *</label><select class="if" id="tvFuel" onchange="tvDD('Colour')"><option value="">--</option></select></div>
+    <div class="ig"><label class="il">Colour *</label><select class="if" id="tvColour" onchange="tvDD('Interior')"><option value="">--</option></select></div>
+    <div class="ig"><label class="il">Interior *</label><select class="if" id="tvInterior" onchange="tvDD('Suffix')"><option value="">--</option></select></div>
+    <div class="ig"><label class="il">Suffix (auto)</label><input class="if" id="tvSuffix" readonly></div>
+    <div class="ig"><label class="il">TKM Dispatch Date</label><input class="if" id="tvDispatch" type="date"></div>
+    <div class="ig"><label class="il">Remarks</label><input class="if" id="tvRem" type="text" placeholder="Damage, condition..."></div>
+    <div class="al al-err" id="tvErr"></div>
+    <button class="btn btn-gn" onclick="tsAddVeh()">+ Add Vehicle</button>
+   </div>
+   <div class="al al-err" id="tsS2Err"></div>
+  </div>
+  <div id="tsS3" class="hidden">
+   <div class="card" id="tsFinalBanner" style="background:#064E3B;color:white;border-color:#064E3B;margin-bottom:12px"></div>
+   <div class="card" id="tsFinalList"></div>
+   <div class="al al-err" id="tsS3Err"></div>
+  </div>
+ </div>
+ <div class="ts-foot">
+  <button class="btn btn-gy" id="tsBtnBack" style="flex:1" onclick="tsBack()">Cancel</button>
+  <button class="btn btn-gn" id="tsBtnNext" style="flex:2" onclick="tsNext()">Next &#8250;</button>
+ </div>
+</div>
+
+<!-- Scanner -->
+<div id="scanOv">
+ <div style="background:#000;border-radius:var(--r);width:92%;max-width:380px;overflow:hidden">
+  <div style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;background:#111"><div style="color:white;font-size:14px;font-weight:700">&#128247; Scan Chassis</div><button onclick="closeScan()" style="background:rgba(255,255,255,.15);border:none;color:white;width:30px;height:30px;border-radius:50%;font-size:14px;cursor:pointer">&#10005;</button></div>
+  <div style="position:relative;background:#000"><video id="scanVid" style="width:100%;display:block;max-height:300px;object-fit:cover"></video><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none"><div style="width:70%;aspect-ratio:1;border:3px solid #22C55E;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.45)"></div></div></div>
+  <div style="padding:12px 16px;background:#111"><div id="scanSt" style="color:#9CA3AF;font-size:12px;text-align:center">Point camera at QR or barcode</div><button class="btn btn-gy btn-sm mt8" onclick="closeScan()">Cancel</button></div>
+ </div>
+</div>
+
+<!-- Loader -->
+<div id="loader"><div class="lb"><div class="spin"></div><div style="font-size:13px;font-weight:600;color:var(--g6)" id="loaderTxt">Loading...</div></div></div>
+
+<!-- Success -->
+<div id="succScr"><div class="succ-box">
+ <div style="font-size:52px;margin-bottom:12px" id="succIc"></div>
+ <div style="font-size:20px;font-weight:800;margin-bottom:6px" id="succTit"></div>
+ <div style="font-size:13px;color:var(--g4);margin-bottom:16px" id="succMsg"></div>
+ <div id="succDet" style="text-align:left;background:var(--g0);border-radius:var(--rs);padding:12px;margin-bottom:16px"></div>
+ <button class="btn btn-dk" onclick="closeSucc()">Done</button>
+</div></div>
+
+</div><!-- /app -->
+
+<script src="https://unpkg.com/@zxing/library@0.20.0/umd/index.min.js"></script>
+<script>
+// ═══════════════════════════════════════════════
+// PLANET TOYOTA STOCK TRACKER v12
+// Clean rebuild — July 2026
+// ═══════════════════════════════════════════════
+
+var API = 'https://script.google.com/macros/s/AKfycbxAJFB_cdZJBOurk0fhReCVy2NqHViGKIjp5F_upcbBCepC0bMa50IghWAZHFE8GtVObg/exec';
+
+// ── STATE ──
+var U = null;
+var allStock = [];
+var sfxData = [];
+var activeV = null;
+var curTab = '';
+var stkFil = 'ALL';
+var recentMoves = [];
+var drillStore = {};
+var rcvCh = '';
+var mlData = [];
+var mlFil = 'ALL';
+var dailyData = null;
+var isOnline = navigator.onLine;
+var offQ = [];
+var GE = { src:'TKM', loc:'Stockyard' };
+var TS = { step:1, src:'TKM', loc:'Stockyard', det:{}, vehs:[] };
+var AU = { scope:'ALL', items:[], extras:[], fil:'ALL' };
+var _sw = null, _so = null, _sc = null;
+var scanTarget = '', scanReader = null, scanOn = false;
+var mvLocSel = '', vsLocSel = '';
+var _staffRows = [];
+
+// ── PERMISSIONS ──
+function role() { return U ? U.role.toLowerCase().trim() : ''; }
+function canLog()     { return ['owner','sales manager','service manager','yard staff'].includes(role()); }
+function canDash()    { return role() !== 'yard staff'; }
+function canAlloc()   { return ['owner','sales manager','sales team leader'].includes(role()); }
+function canSeeAlloc(){ return ['owner','sales manager','edp','sales team leader'].includes(role()); }
+function canTkm()     { return ['owner','sales manager','edp'].includes(role()); }
+function canStaff()   { return role() === 'owner'; }
+function canAudit()   { return ['owner','sales manager','service manager','yard staff'].includes(role()); }
+function canDaily()   { return ['owner','sales manager'].includes(role()); }
+
+// ── UTILS ──
+function $(id) { return document.getElementById(id); }
+function gv(id) { var e=$(id); return e ? e.value.trim() : ''; }
+function sv(id,v) { var e=$(id); if(e) e.value = v; }
+function showLoad(t) { $('loaderTxt').textContent = t||'Loading...'; $('loader').classList.add('show'); }
+function hideLoad() { $('loader').classList.remove('show'); }
+function openOL(id) { var e=$(id); if(e) e.classList.add('open'); }
+function closeOL(id) { var e=$(id); if(e) e.classList.remove('open'); }
+function sal(id,msg) { var e=$(id); if(!e) return; e.textContent=msg; e.classList.add('show'); }
+function hal(id) { var e=$(id); if(e) e.classList.remove('show'); }
+function show(id) { var e=$(id); if(e) e.classList.remove('hidden'); }
+function hide(id) { var e=$(id); if(e) e.classList.add('hidden'); }
+function today() { return new Date().toISOString().split('T')[0]; }
+function nowISO() { return new Date().toISOString(); }
+function emH(ic,tx,sb) {
+  return '<div class="empty">'+(ic?'<div class="e-ic">'+ic+'</div>':'')+'<div class="e-tx">'+tx+'</div>'+(sb?'<div class="e-sb">'+sb+'</div>':'')+'</div>';
+}
+function retryBtn(fn) {
+  return '<div style="text-align:center;margin-top:12px"><button class="btn btn-gy btn-sm" style="width:auto" onclick="'+fn+'">&#8635; Retry</button></div>';
+}
+
+function showSucc(ic,tit,msg,rows) {
+  $('succIc').textContent = ic;
+  $('succTit').textContent = tit;
+  $('succMsg').textContent = msg;
+  var det = '';
+  (rows||[]).forEach(function(r) {
+    det += '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--g1)"><span style="font-size:11px;color:var(--g4)">'+r.k+'</span><span style="font-size:12px;font-weight:600">'+r.v+'</span></div>';
+  });
+  $('succDet').innerHTML = det;
+  $('succScr').classList.add('show');
+}
+function closeSucc() { $('succScr').classList.remove('show'); }
+
+function locPill(loc) {
+  var map = { 'Stockyard':'p-yd','Workshop':'p-ws','Showroom':'p-sr','In Transit':'p-tr','TKM Billed':'p-tk' };
+  return '<span class="pill '+(map[loc]||'p-yd')+'">'+(loc||'?')+'</span>';
+}
+function ageCol(d) {
+  d = parseInt(d)||0;
+  return d>=45?'var(--red)':d>=30?'var(--tr)':d>=15?'var(--am)':'var(--gn)';
+}
+var LOCST = {
+  'Stockyard':{bg:'#ECFDF5',fg:'#065F46'},
+  'Workshop':{bg:'#EFF6FF',fg:'#1E40AF'},
+  'Showroom':{bg:'#F5F3FF',fg:'#5B21B6'},
+  'In Transit':{bg:'#FFF7ED',fg:'#C2410C'}
+};
+
+// ── API ──
+async function AGET(p) {
+  var q = Object.keys(p).map(function(k) {
+    return encodeURIComponent(k)+'='+encodeURIComponent(p[k]);
+  }).join('&');
+  var r = await fetch(API+'?'+q);
+  var t = await r.text();
+  try { return JSON.parse(t); } catch(e) { throw new Error('Server error: '+t.substring(0,100)); }
+}
+
+async function APOST(payload) {
+  if (!isOnline) {
+    var qa = ['logMovement','allocateVehicle','deallocateVehicle','submitAudit'];
+    if (qa.indexOf(payload.action) >= 0) {
+      payload._q = nowISO();
+      offQ.push(payload);
+      try { localStorage.setItem('pt_oq',JSON.stringify(offQ)); } catch(e) {}
+      updateOffBar();
+      return { success:true, offline:true };
+    }
+    throw new Error('Offline');
+  }
+  var r = await fetch(API, { method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload) });
+  var t = await r.text();
+  try { return JSON.parse(t); } catch(e) { throw new Error('Server error'); }
+}
+
+// ── OFFLINE ──
+function initOffline() {
+  try { offQ = JSON.parse(localStorage.getItem('pt_oq')||'[]'); } catch(e) { offQ = []; }
+  updateOffBar();
+  window.addEventListener('online', function() { isOnline=true; updateOffBar(); syncOffline(); });
+  window.addEventListener('offline', function() { isOnline=false; updateOffBar(); });
+}
+function updateOffBar() {
+  var b = $('offlineBar'); if(!b) return;
+  b.style.display = isOnline ? 'none' : 'block';
+  var c = $('oqc'); if(c) c.textContent = offQ.length;
+}
+async function syncOffline() {
+  if (!offQ.length) return;
+  var q = offQ.slice(); offQ = []; updateOffBar();
+  showLoad('Syncing '+q.length+' action(s)...');
+  var ok=0, fail=0;
+  for (var i=0; i<q.length; i++) {
+    var p = Object.assign({},q[i]); delete p._q;
+    try { await APOST(p); ok++; } catch(e) { fail++; offQ.push(q[i]); }
+  }
+  try { localStorage.setItem('pt_oq',JSON.stringify(offQ)); } catch(e) {}
+  hideLoad();
+  if (ok > 0) { showSucc('✅','Synced!',ok+' action(s) synced'+(fail?' | '+fail+' failed':'.'),[]);}
+  loadAllStock();
+}
+
+// ── SESSION ──
+function startSess() {
+  clearSess();
+  _sw = setTimeout(showSessWarn, 25*60*1000);
+  _so = setTimeout(doLogout, 30*60*1000);
+}
+function clearSess() { clearTimeout(_sw); clearTimeout(_so); clearInterval(_sc); }
+function showSessWarn() {
+  $('sessWarnOv').classList.add('show');
+  var rem = 5*60;
+  function tick() {
+    var e = $('swCd'); if(e) { var m=Math.floor(rem/60),s=rem%60; e.textContent=m+':'+(s<10?'0':'')+s; }
+    if(rem<=0) { clearInterval(_sc); doLogout(); }
+    rem--;
+  }
+  tick();
+  _sc = setInterval(tick,1000);
+}
+function extSess() {
+  $('sessWarnOv').classList.remove('show');
+  clearSess();
+  if(U) { U.loginTime=Date.now(); try{localStorage.setItem('pt_sess',JSON.stringify(U));}catch(e){} }
+  startSess();
+}
+function resetSessTimer() {
+  if(!U) return;
+  if($('sessWarnOv').classList.contains('show')) return;
+  clearSess();
+  if(U) { U.loginTime=Date.now(); try{localStorage.setItem('pt_sess',JSON.stringify(U));}catch(e){} }
+  startSess();
+}
+
+// ── PIN ──
+var _pin = '';
+function _dots() {
+  for(var i=0;i<4;i++) {
+    var e=$('d'+i); if(e) e.className='ls-dot'+(i<_pin.length?' on':'');
+  }
+  if(_pin.length===4) _attempt();
+}
+function pk(n) { if(_pin.length<4) { _pin+=String(n); _dots(); } }
+function pd() { _pin=_pin.slice(0,-1); _dots(); }
+function pc() { _pin=''; _dots(); }
+function _setPinSt(msg) {
+  var e=$('pinSt'); if(!e) return;
+  e.innerHTML = msg ? '&#9888; '+msg : '';
+  if(msg) {
+    var ls=$('loginScreen');
+    if(ls) {
+      ls.classList.remove('shake');
+      void ls.offsetWidth;
+      ls.classList.add('shake');
+      setTimeout(function(){ls.classList.remove('shake');},400);
+    }
+  }
+}
+function _setConn(on) {
+  var e=$('pinSt'); if(!e) return;
+  e.innerHTML = on ? '<div class="loading-dots"><span></span><span></span><span></span></div>' : '';
+  document.querySelectorAll('.ls-btn').forEach(function(b){b.disabled=on;});
+}
+
+async function _attempt() {
+  var name = $('nameSelect').value;
+  if(!name) { _pin=''; _dots(); _setPinSt('Please select your name first.'); return; }
+  _setConn(true);
+  try {
+    var d = await AGET({action:'verifyPin', name:name, pin:_pin});
+    _pin=''; _dots(); _setConn(false);
+    if(d.success && d.authenticated) {
+      U = { name:d.staffName||name, role:d.role, loginTime:Date.now() };
+      try { localStorage.setItem('pt_sess',JSON.stringify(U)); } catch(e) {}
+      var ls = $('loginScreen');
+      if(ls) { ls.style.transition='opacity .4s'; ls.style.opacity='0'; setTimeout(function(){ ls.style.display='none'; boot(); },400); }
+      else boot();
+    } else {
+      _setPinSt(d.error||'Incorrect PIN. Try again.');
+    }
+  } catch(e) {
+    _pin=''; _dots(); _setConn(false);
+    _setPinSt('Connection error. Check internet.');
+  }
+}
+
+// ── LOAD NAMES ──
+async function loadNames() {
+  var sel = $('nameSelect');
+  var info = $('nameInfo');
+  var err = $('nameErr');
+  if(info) info.textContent = 'Fetching staff list...';
+  if(err) err.classList.remove('show');
+  try {
+    var d = await AGET({action:'getStaffList'});
+    if(d.success && d.staff) {
+      var active = d.staff.filter(function(s){ return (s.status||'Active').toLowerCase()==='active'; });
+      if(!active.length) active = d.staff;
+      sel.innerHTML = '<option value="">-- Choose your name --</option>';
+      active.forEach(function(s) {
+        var o = document.createElement('option');
+        o.value = s.name; o.textContent = s.name;
+        sel.appendChild(o);
+      });
+      if(info) info.textContent = '';
+    } else {
+      throw new Error(d.error||'No staff data');
+    }
+  } catch(e) {
+    console.error('loadNames error:', e);
+    sel.innerHTML = '<option value="">-- Retry below --</option>';
+    if(info) info.textContent = '';
+    if(err) {
+      err.innerHTML = '&#9888; Error: '+e.message+'<br><small style="opacity:.7">'+new Date().toLocaleTimeString()+'</small><br><button onclick="loadNames()" style="background:none;border:none;color:#F59E0B;font-weight:700;cursor:pointer;text-decoration:underline;font-size:13px;margin-top:4px;display:block">&#8635; Tap to Retry</button>';
+      err.classList.add('show');
+    }
+  }
+}
+
+// ── BOOT ──
+function boot() {
+  $('loginScreen').style.display = 'none';
+  $('HDR').classList.add('show');
+  $('CONT').classList.add('show');
+  $('BNAV').classList.add('show');
+  $('hdrNm').textContent = U.name;
+  var rp = $('hdrRole');
+  rp.textContent = U.role;
+  rp.className = 'r-pill r-'+U.role.toLowerCase().replace(/\s+/g,'-');
+  if(canDash()) show('navDash');
+  if(canLog()) show('navLog');
+  if(canDash()) show('navStock');
+  if(canDaily()) show('navDaily');
+  if(canAudit()) show('navAudit');
+  if(canTkm()) show('btnTkm');
+  if(canStaff()) show('piStaff');
+  if(canAudit()) show('piAudit');
+  if(canSeeAlloc()) show('piAllocAge');
+  loadSfx();
+  loadAllStock();
+  try { recentMoves = JSON.parse(localStorage.getItem('pt_rcnt')||'[]'); } catch(e) {}
+  renderRecent();
+  initOffline();
+  startSess();
+  ['click','touchstart','keydown'].forEach(function(ev) {
+    document.addEventListener(ev, resetSessTimer, {passive:true});
+  });
+  if(canDash()) goTab('Dash'); else goTab('Log');
+}
+
+function doLogout() {
+  if(!confirm('Logout?')) return;
+  clearSess();
+  try { localStorage.removeItem('pt_sess'); } catch(e) {}
+  location.reload();
+}
+
+// ── TABS ──
+function goTab(name) {
+  curTab = name;
+  ['Dash','Log','Stock','Daily'].forEach(function(t) {
+    var tab = $('tab'+t), btn = $('nav'+t);
+    if(tab) tab.className = 'tab'+(t===name?' on':'');
+    if(btn) { btn.className = btn.className.replace(' on',''); if(t===name) btn.className+=' on'; }
+  });
+  if(name==='Dash') loadDash();
+  if(name==='Log') { renderRecent(); loadTransits(); }
+  if(name==='Stock') renderStock();
+  if(name==='Daily') { if(!gv('dailyDate')) setDailyToday(); else loadDaily(); }
+}
+
+// ── SUFFIX CASCADE ──
+async function loadSfx() {
+  try {
+    var d = await AGET({action:'getSuffixData'});
+    if(d.success) sfxData = d.rows||d.suffixes||[];
+  } catch(e) { console.warn('loadSfx:',e); }
+}
+function pDD(id,opts,ph) {
+  var el=$(id); if(!el) return;
+  el.innerHTML = '<option value="">'+ph+'</option>'+opts.map(function(o){ return '<option>'+o+'</option>'; }).join('');
+}
+function sfxOpts(fn,key) {
+  var seen={}, out=[];
+  sfxData.filter(fn).forEach(function(r){ var v=r[key]||'(None)'; if(!seen[v]){seen[v]=1;out.push(v);} });
+  return out.sort();
+}
+function sfxFind(m,v,f,c,i) {
+  return sfxData.find(function(r){ return r.model===m&&r.variant===v&&r.fuel===f&&r.colour===c&&(r.interior===i||(!r.interior&&i==='(None)')); });
+}
+function setSfxFld(id,match) {
+  var el=$(id); if(!el) return;
+  el.value = match?match.suffix:'Not matched';
+  el.className = 'if '+(match?'ok':'er');
+}
+function fillModels(pfx) {
+  if(!sfxData.length) { loadSfx().then(function(){ fillModels(pfx); }); return; }
+  pDD(pfx+'Model', [].concat.apply([],[[],Array.from(new Set(sfxData.map(function(r){return r.model;}))).sort()]).slice(1), '-- Select Model --');
+  var seen={},out=[];
+  sfxData.forEach(function(r){if(!seen[r.model]){seen[r.model]=1;out.push(r.model);}});
+  pDD(pfx+'Model',out.sort(),'-- Select Model --');
+}
+function cascDD(pfx,next,m,v,f,c,i) {
+  if(next==='Variant') {
+    pDD(pfx+'Variant',sfxOpts(function(r){return r.model===m;},'variant'),'-- Variant --');
+    ['Fuel','Colour','Interior'].forEach(function(x){pDD(pfx+x,[],'--');});
+    setSfxFld(pfx+'Suffix',null);
+  }
+  if(next==='Fuel') {
+    pDD(pfx+'Fuel',sfxOpts(function(r){return r.model===m&&r.variant===v;},'fuel'),'-- Fuel --');
+    ['Colour','Interior'].forEach(function(x){pDD(pfx+x,[],'--');});
+    setSfxFld(pfx+'Suffix',null);
+  }
+  if(next==='Colour') {
+    pDD(pfx+'Colour',sfxOpts(function(r){return r.model===m&&r.variant===v&&r.fuel===f;},'colour'),'-- Colour --');
+    pDD(pfx+'Interior',[],'--');
+    setSfxFld(pfx+'Suffix',null);
+  }
+  if(next==='Interior') {
+    pDD(pfx+'Interior',sfxOpts(function(r){return r.model===m&&r.variant===v&&r.fuel===f&&r.colour===c;},'interior'),'-- Interior --');
+    setSfxFld(pfx+'Suffix',null);
+  }
+  if(next==='Suffix') { setSfxFld(pfx+'Suffix',sfxFind(m,v,f,c,i)); }
+}
+function geDD(n){cascDD('ge',n,gv('geModel'),gv('geVariant'),gv('geFuel'),gv('geColour'),gv('geInterior'));}
+function tbDD(n){cascDD('tb',n,gv('tbModel'),gv('tbVariant'),gv('tbFuel'),gv('tbColour'),gv('tbInterior'));}
+function tvDD(n){cascDD('tv',n,gv('tvModel'),gv('tvVariant'),gv('tvFuel'),gv('tvColour'),gv('tvInterior'));}
+
+// ── DASHBOARD ──
+async function loadDash() {
+  $('dashCont').innerHTML = emH('','Loading...','');
+  try {
+    var d = await AGET({action:'getDashboard'});
+    if(!d.success) { $('dashCont').innerHTML = emH('⚠️','Error: '+(d.error||'Failed'),'')+retryBtn('loadDash()'); return; }
+    renderDash(d);
+  } catch(e) { $('dashCont').innerHTML = emH('⚠️','Connection error',e.message)+retryBtn('loadDash()'); }
+}
+function renderDash(d) {
+  var total=d.total||0, models=d.models||[];
+  var maxC = models.length ? Math.max.apply(null,models.map(function(m){return m.count;})) : 1;
+  var h = '<div class="dash-hero"><div style="font-size:52px;font-weight:900;letter-spacing:-2px;line-height:1;color:white">'+total+'</div><div style="font-size:11px;opacity:.5;text-transform:uppercase;letter-spacing:.8px;margin-top:4px;color:white">Total Vehicles in Stock</div></div>';
+  h += '<div class="sg">';
+  h += mkSC('yd',d.stockyard||0,'&#127963; Stockyard',"openLocDrill('Stockyard')");
+  h += mkSC('ws',d.workshop||0,'&#128295; Workshop',"openLocDrill('Workshop')");
+  h += mkSC('sr',d.showroom||0,'&#127970; Showroom',"openLocDrill('Showroom')");
+  h += mkSC('tr',d.transit||0,'&#128667; In Transit',"openLocDrill('In Transit')");
+  h += '</div>';
+  h += '<div class="sc tk" onclick="openTkmList()" style="cursor:pointer;margin-bottom:12px;display:block"><div class="sn">'+(d.tkmBilled||0)+'</div><div class="sl">&#128203; TKM Billed &#8212; Not Yet Arrived</div></div>';
+  var b60=[],b45=[],b30=[];
+  allStock.forEach(function(v) {
+    var dd=parseInt(v.days)||0;
+    if(v.status==='Delivered'||v.status==='TKM Billed'||v.status==='In Transit') return;
+    if(dd>=60) b60.push(v); else if(dd>=45) b45.push(v); else if(dd>=30) b30.push(v);
+  });
+  if(b60.length||b45.length||b30.length) {
+    h += '<div style="margin-bottom:12px"><div class="ct">&#9888; Ageing Alerts</div>';
+    if(b60.length) h += '<div class="age-band ab-crit" onclick="openAgeDrill(\'60+\')"><div><div style="font-size:13px;font-weight:800;color:var(--red)">60+ Days &#8212; Critical</div></div><div style="font-size:28px;font-weight:900;color:var(--red)">'+b60.length+'</div></div>';
+    if(b45.length) h += '<div class="age-band ab-warn" onclick="openAgeDrill(\'45+\')"><div><div style="font-size:13px;font-weight:800;color:var(--tr)">45&#8211;60 Days &#8212; High Risk</div></div><div style="font-size:28px;font-weight:900;color:var(--tr)">'+b45.length+'</div></div>';
+    if(b30.length) h += '<div class="age-band ab-mon" onclick="openAgeDrill(\'30+\')"><div><div style="font-size:13px;font-weight:800;color:var(--am)">30&#8211;45 Days &#8212; Monitor</div></div><div style="font-size:28px;font-weight:900;color:var(--am)">'+b30.length+'</div></div>';
+    h += '</div>';
+  }
+  h += '<div class="card"><div class="ct">Model-wise Stock</div>';
+  if(models.length) {
+    models.forEach(function(m,i) {
+      var pct = maxC>0?Math.round(m.count/maxC*100):0;
+      var key = encodeURIComponent(m.model);
+      h += '<div class="mr" onclick="openMD(\''+key+'\')">';
+      h += '<div style="font-size:11px;font-weight:800;color:var(--g2);width:18px;flex-shrink:0">'+(i+1)+'</div>';
+      h += '<div class="mi"><div class="mn">'+m.model+'</div><div class="mb"><div class="mf" style="width:'+pct+'%"></div></div></div>';
+      h += '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><div style="font-size:26px;font-weight:900;letter-spacing:-.5px">'+m.count+'</div></div></div>';
+    });
+  } else { h += emH('','No stock data',''); }
+  h += '</div>';
+  if(canSeeAlloc()&&models.length) {
+    h += '<div class="card"><div class="ct">Allocated vs Free</div>';
+    models.forEach(function(m) {
+      var al=m.allocated||0, fr=m.free||0, tot=al+fr, ap=tot>0?Math.round(al/tot*100):0;
+      h += '<div style="padding:10px 0;border-bottom:1px solid var(--g1)">';
+      h += '<div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;font-weight:700">'+m.model+'</span><span style="font-size:11px;color:var(--g4)">'+tot+' total</span></div>';
+      h += '<div style="height:8px;border-radius:4px;overflow:hidden;background:var(--gns)"><div style="width:'+ap+'%;background:#FEF3C7;height:100%"></div></div>';
+      h += '<div style="display:flex;gap:12px;margin-top:5px"><span style="font-size:11px;font-weight:700;color:#92400E">&#128278; '+al+' Alloc</span><span style="font-size:11px;font-weight:700;color:var(--gn)">&#10003; '+fr+' Free</span></div></div>';
+    });
+    h += '</div>';
+  }
+  $('dashCont').innerHTML = h;
+}
+function mkSC(cls,num,lbl,fn) {
+  return '<div class="sc '+cls+'" onclick="'+fn+'" style="cursor:pointer"><div class="sn">'+num+'</div><div class="sl">'+lbl+'</div></div>';
+}
+
+// ── ALL STOCK ──
+async function loadAllStock() {
+  try {
+    var d = await AGET({action:'getAllStock'});
+    if(d.success) allStock = d.stock||[];
+    if(curTab==='Stock') renderStock();
+  } catch(e) { console.warn('loadAllStock:',e); }
+}
+
+// ── LOCATION DRILL ──
+function openLocDrill(loc) {
+  var vs = allStock.filter(function(v) {
+    if(v.status==='Delivered') return false;
+    if(loc==='In Transit') return v.status==='In Transit';
+    return v.location===loc && v.status!=='In Transit';
+  }).sort(function(a,b){ return parseInt(b.days||0)-parseInt(a.days||0); });
+  $('mdTitle').textContent = loc;
+  $('mdSub').textContent = vs.length+' vehicle'+(vs.length!==1?'s':'');
+  $('mdBody').innerHTML = vs.length ? vs.map(function(v){return buildCR(v,true);}).join('') : emH('✅','No vehicles here','');
+  openOL('mdOL');
+}
+function buildCR(v,inDrill) {
+  var loc = v.status==='In Transit'?'In Transit':(v.location||'Unknown');
+  var dc = ageCol(v.days);
+  var ab = canSeeAlloc()?(v.allocatedTo&&v.allocatedTo.trim()?'<span class="pill p-al">&#128100; '+v.allocatedTo+'</span>':'<span class="pill p-fr">Available</span>'):'';
+  var closeDrill = inDrill?"closeOL('mdOL');":'';
+  var mv = '<button class="act act-mv" onclick="'+closeDrill+'openVS(\''+v.chassis+'\')">View</button>';
+  var al = '';
+  if(canAlloc()) {
+    if(v.allocatedTo&&v.allocatedTo.trim()) {
+      al = '<button class="act act-fr" onclick="doDealloc(\''+v.chassis+'\')">&#10005; Free</button>';
+    } else {
+      al = '<button class="act act-al" onclick="qAlloc(\''+v.chassis+'\')">&#128278; Alloc</button>';
+    }
+  }
+  return '<div class="cr">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+    +'<div><div style="font-size:14px;font-weight:700">'+v.model+' '+v.variant+' <span style="color:var(--red);font-size:11px">'+(v.suffix||'')+'</span></div>'
+    +'<div style="font-size:12px;font-family:monospace;color:var(--g6);margin-top:2px">'+v.chassis+'</div></div>'
+    +'<span style="font-size:11px;font-weight:700;color:'+dc+'">'+(v.days||0)+'d</span></div>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">'+locPill(loc)+' '+ab+'</div>'
+    +'<div style="font-size:11px;color:var(--g4);margin-top:3px">'+(v.colour||'')+(v.fuel?' &middot; '+v.fuel:'')+'</div>'
+    +'<div style="display:flex;gap:6px;margin-top:8px">'+mv+al+'</div></div>';
+}
+
+// ── COLOUR SWATCH ──
+var SWATCH = {'white':'#F5F5F0','super white':'#FFFFFF','white pearl':'#F0EEE8','silver':'#C0C0C0','grey':'#808080','gray':'#808080','black':'#1A1A1A','attitude black':'#111','red':'#CC0000','blue':'#1E3A8A','dark blue':'#1E3A8A','maroon':'#800000','orange':'#EA580C','golden':'#D4AF37','brown':'#78350F','green':'#166534'};
+function sw(colour) {
+  if(!colour) return '#E5E7EB';
+  var k = colour.toLowerCase();
+  for(var key in SWATCH) { if(k.indexOf(key)>=0) return SWATCH[key]; }
+  var h=0; for(var i=0;i<k.length;i++) h=k.charCodeAt(i)+((h<<5)-h);
+  return 'hsl('+(Math.abs(h)%360)+',35%,60%)';
+}
+
+// ── MODEL DRILL ──
+function openMD(modelKey) {
+  var modelName = decodeURIComponent(modelKey);
+  $('mdTitle').textContent = modelName;
+  $('mdSub').textContent = 'Loading...';
+  $('mdBody').innerHTML = emH('','Loading...','');
+  openOL('mdOL');
+  var stock = allStock.filter(function(v){ return (v.model||'').toLowerCase()===modelName.toLowerCase()&&v.status!=='Delivered'; });
+  renderMD(modelName,stock);
+}
+function renderMD(modelName,stock) {
+  if(!stock.length) { $('mdSub').textContent='No stock'; $('mdBody').innerHTML=emH('&#128663;','No vehicles in stock',''); return; }
+  $('mdSub').textContent = stock.length+' units \u2014 tap colour for chassis';
+  var vm = {};
+  stock.forEach(function(v) {
+    var vt=v.variant||'Unknown', fu=v.fuel||'', co=v.colour||'Unknown';
+    var loc = v.status==='In Transit'?'In Transit':(v.location||'Unknown');
+    var key = vt+'|||'+fu;
+    if(!vm[key]) vm[key]={vt:vt,fu:fu,colours:{},total:0};
+    vm[key].total++;
+    if(!vm[key].colours[co]) vm[key].colours[co]={count:0,locs:{},vehicles:[]};
+    vm[key].colours[co].count++;
+    vm[key].colours[co].vehicles.push(v);
+    vm[key].colours[co].locs[loc]=(vm[key].colours[co].locs[loc]||0)+1;
+  });
+  var vars = Object.values(vm).sort(function(a,b){return b.total-a.total;});
+  var out = '<div style="background:var(--dk);border-radius:var(--r);padding:16px 20px;margin-bottom:12px;color:white;display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:10px;opacity:.4;text-transform:uppercase">'+modelName+'</div></div><div style="font-size:48px;font-weight:900;letter-spacing:-2px;line-height:1">'+stock.length+'</div></div>';
+  vars.forEach(function(vt) {
+    var rows = '';
+    var colEntries=Object.entries(vt.colours);
+    colEntries.sort(function(x,y){
+      var xc=x[1].count, yc=y[1].count;
+      if(yc>xc) return 1;
+      if(yc<xc) return -1;
+      return 0;
+    });
+    colEntries.forEach(function(en) {
+      var colour=en[0], data=en[1];
+      var pills='';
+      Object.entries(data.locs).forEach(function(le) {
+        var ls=LOCST[le[0]]||{bg:'#F3F4F6',fg:'#374151'};
+        pills+='<span class="lqp" style="background:'+ls.bg+';color:'+ls.fg+'">'+le[0]+' <strong>'+le[1]+'</strong></span>';
+      });
+      var an=data.vehicles.filter(function(v){return v.allocatedTo&&v.allocatedTo.trim();}).length;
+      if(canSeeAlloc()&&an) pills+='<span class="lqp" style="background:#FEF3C7;color:#92400E">Alloc <strong>'+an+'</strong></span>';
+      var dk=(modelName+'_'+vt.vt+'_'+colour).replace(/[^a-zA-Z0-9]/g,'_');
+      drillStore[dk]={colour:colour,variant:vt.vt,fuel:vt.fu,vehicles:data.vehicles};
+      rows+='<div class="clr-row" data-dk="'+dk+'" onclick="openCDbyKey(this.dataset.dk)">'
+        +'<div style="display:flex;align-items:center;gap:10px"><div class="csw" style="background:'+sw(colour)+'"></div>'
+        +'<div><div style="font-size:13px;font-weight:600">'+colour+'</div>'
+        +'<div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:3px">'+pills+'</div></div></div>'
+        +'<div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="font-size:22px;font-weight:900">'+data.count+'</div></div></div>';
+    });
+    out+='<div class="vc"><div class="vch"><div><span style="font-size:14px;font-weight:800">'+vt.vt+'</span>'+(vt.fu?'<span style="background:var(--bls);color:var(--bl);font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;margin-left:6px">'+vt.fu+'</span>':'')+'</div><span style="background:var(--red);color:white;font-size:12px;font-weight:800;padding:3px 10px;border-radius:10px">'+vt.total+'</span></div>'+rows+'</div>';
+  });
+  $('mdBody').innerHTML = out;
+}
+
+// ── COLOUR DRILL ──
+function openCDbyKey(dk) { var e=drillStore[dk]; if(!e) return; openCD(e.colour,e.variant,e.fuel,e.vehicles); }
+function openCD(colour,variant,fuel,vehicles) {
+  $('cdTitle').textContent = colour+' \u00b7 '+variant;
+  $('cdSub').textContent = vehicles.length+' unit'+(vehicles.length!==1?'s':'')+(fuel?' \u00b7 '+fuel:'');
+  var sorted = vehicles.slice().sort(function(a,b){return parseInt(b.days||0)-parseInt(a.days||0);});
+  var html = '';
+  sorted.forEach(function(v) {
+    var loc=v.status==='In Transit'?'In Transit':(v.location||'Unknown');
+    var ls=LOCST[loc]||{bg:'#F3F4F6',fg:'#374151'};
+    var dc=ageCol(v.days);
+    var ab=canSeeAlloc()?(v.allocatedTo&&v.allocatedTo.trim()?'<span class="pill p-al">&#128100; '+v.allocatedTo+'</span>':'<span class="pill p-fr">Available</span>'):'';
+    var mv='<button class="act act-mv" onclick="closeOL(\'cdOL\');closeOL(\'mdOL\');openVS(\''+v.chassis+'\')">View</button>';
+    var al='';
+    if(canAlloc()) {
+      al=v.allocatedTo&&v.allocatedTo.trim()?'<button class="act act-fr" onclick="doDealloc(\''+v.chassis+'\')">&#10005; Free</button>':'<button class="act act-al" onclick="qAlloc(\''+v.chassis+'\')">&#128278; Alloc</button>';
+    }
+    html+='<div class="ccard"><div style="display:flex;justify-content:space-between;gap:8px"><div style="flex:1"><div style="font-size:13px;font-family:monospace;font-weight:700">'+v.chassis+'</div><div style="font-size:11px;color:var(--red);margin-top:2px">'+(v.suffix||'')+'</div></div><div style="text-align:right;flex-shrink:0"><div style="font-size:22px;font-weight:900;color:'+dc+'">'+(v.days||0)+'</div><div style="font-size:9px;color:var(--g4)">days</div></div></div><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px"><span class="pill" style="background:'+ls.bg+';color:'+ls.fg+'">'+loc+'</span>'+ab+'</div><div style="display:flex;gap:6px;margin-top:8px">'+mv+al+'</div></div>';
+  });
+  $('cdBody').innerHTML = html||emH('','No vehicles','');
+  openOL('cdOL');
+}
+function qAlloc(chassis) {
+  activeV = allStock.find(function(x){return x.chassis===chassis;})||{chassis:chassis};
+  closeOL('mdOL'); closeOL('cdOL');
+  openAllocModal();
+}
+
+// ── AGE DRILL ──
+function openAgeDrill(bucket) {
+  var cfg = {
+    '60+':{min:60,max:9999,lbl:'60+ Days \u2014 Critical',col:'var(--red)'},
+    '45+':{min:45,max:59,lbl:'45\u201360 Days',col:'var(--tr)'},
+    '30+':{min:30,max:44,lbl:'30\u201345 Days',col:'var(--am)'}
+  }[bucket];
+  if(!cfg) return;
+  var vs = allStock.filter(function(v){
+    var d=parseInt(v.days)||0;
+    return d>=cfg.min&&d<=cfg.max&&v.status!=='Delivered'&&v.status!=='TKM Billed'&&v.status!=='In Transit';
+  }).sort(function(a,b){return parseInt(b.days)-parseInt(a.days);});
+  $('ageTitle').textContent = cfg.lbl;
+  $('ageSub').textContent = vs.length+' vehicle'+(vs.length!==1?'s':'');
+  $('ageBody').innerHTML = vs.length?vs.map(function(v){
+    return '<div class="ccard"><div style="display:flex;justify-content:space-between;gap:8px"><div style="flex:1"><div style="font-size:13px;font-family:monospace;font-weight:700">'+v.chassis+'</div><div style="font-size:11px;color:var(--red);margin-top:2px">'+v.model+' '+v.variant+' '+(v.suffix||'')+'</div></div><div style="text-align:right;flex-shrink:0"><div style="font-size:22px;font-weight:900;color:'+cfg.col+'">'+(v.days||0)+'</div><div style="font-size:9px;color:var(--g4)">days</div></div></div><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">'+locPill(v.location||'Unknown')+'</div><div style="margin-top:8px"><button class="act act-mv" onclick="closeOL(\'ageOL\');openVS(\''+v.chassis+'\')">View</button></div></div>';
+  }).join(''):emH('','No vehicles in this range','');
+  openOL('ageOL');
+}
+
+// ── VEHICLE SCREEN ──
+async function openVS(chassis) {
+  activeV = allStock.find(function(x){return x.chassis===chassis;});
+  if(!activeV) {
+    showLoad('Loading vehicle...');
+    try { var d=await AGET({action:'lookupChassis',chassis:chassis}); hideLoad(); if(d.success&&d.vehicle) activeV=d.vehicle; else{alert('Vehicle not found.');return;} }
+    catch(e) { hideLoad(); alert('Error: '+e.message); return; }
+  }
+  $('vsTitle').textContent = (activeV.model||'')+' '+(activeV.variant||'');
+  vsLocSel = '';
+  renderVS();
+  $('VS').classList.add('open');
+}
+function closeVS() { $('VS').classList.remove('open'); }
+function vsPick(el,loc) {
+  vsLocSel=loc;
+  ['Stockyard','Workshop','Showroom'].forEach(function(l){var t=$('vsL_'+l);if(t)t.classList.remove('on');});
+  el.classList.add('on');
+}
+async function renderVS() {
+  var v=activeV; if(!v) return;
+  var loc=v.status==='In Transit'?'In Transit':(v.location||'Unknown');
+  var dc=ageCol(v.days);
+  var h='<div class="v-hero"><div style="font-size:20px;font-weight:900;color:white">'+v.model+'</div><div style="font-size:13px;opacity:.65;margin-top:4px;color:white">'+v.variant+'</div><div style="font-size:12px;color:#FF7070;font-weight:700;margin-top:3px">'+(v.suffix||'')+'</div><div style="font-size:11px;font-family:monospace;opacity:.5;margin-top:6px;color:white;letter-spacing:1px">'+v.chassis+'</div></div>';
+  h+='<div class="dg"><div class="di"><div class="di-l">Location</div><div class="di-v">'+locPill(loc)+'</div></div><div class="di"><div class="di-l">Age</div><div class="di-v" style="color:'+dc+'">'+(v.days||0)+' days</div></div><div class="di"><div class="di-l">Colour</div><div class="di-v">'+(v.colour||'\u2014')+'</div></div><div class="di"><div class="di-l">Fuel</div><div class="di-v">'+(v.fuel||'\u2014')+'</div></div></div>';
+  if(canSeeAlloc()) {
+    if(v.allocatedTo&&v.allocatedTo.trim()) {
+      h+='<div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:var(--r);padding:14px;margin-bottom:12px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;opacity:.7">Allocated To</div><div style="font-size:17px;font-weight:800;margin-top:4px;color:#92400E">&#128100; '+v.allocatedTo+'</div>'+(v.allocBookingRef?'<div style="font-size:12px;margin-top:3px;color:#B45309">Ref: '+v.allocBookingRef+'</div>':'')+'<div style="margin-top:8px;display:flex;gap:8px">'+(canAlloc()?'<button class="btn btn-gy btn-sm" style="flex:1" onclick="openAllocModal()">\u270f Update</button><button class="btn btn-gy btn-sm" style="flex:1" onclick="doDealloc(\''+v.chassis+'\')">&#10005; Remove</button>':'')+'</div></div>';
+    } else {
+      h+='<div style="background:var(--gns);border:1px solid #A7F3D0;border-radius:var(--r);padding:14px;margin-bottom:12px"><div style="font-size:15px;font-weight:700;color:var(--gn)">&#10003; Available \u2014 Not Allocated</div>'+(canAlloc()?'<button class="btn btn-dk btn-sm mt8" onclick="openAllocModal()">&#128278; Allocate to Customer</button>':'')+'</div>';
+    }
+  }
+  if(canLog()) {
+    h+='<div class="card mt8"><div class="ct">Move Vehicle</div><div class="ig"><label class="il">Destination *</label><div class="loc-grid"><div class="loc-tile" id="vsL_Stockyard" onclick="vsPick(this,\'Stockyard\')"><div class="lt-ic">&#127963;</div><div class="lt-nm">Stockyard</div></div><div class="loc-tile" id="vsL_Workshop" onclick="vsPick(this,\'Workshop\')"><div class="lt-ic">&#128295;</div><div class="lt-nm">Workshop</div></div><div class="loc-tile" id="vsL_Showroom" onclick="vsPick(this,\'Showroom\')"><div class="lt-ic">&#127970;</div><div class="lt-nm">Showroom</div></div></div></div><div class="ig"><label class="il">Driver *</label><input class="if" id="vsDr" type="text" placeholder="Person driving"></div><div class="ig"><label class="il">Remarks</label><input class="if" id="vsRm" type="text" placeholder="Optional"></div><div class="al al-err" id="vsErr"></div><button class="btn btn-dk" onclick="doVSMove()">&#128663; Dispatch</button></div>';
+  }
+  h+='<div class="card mt8"><div class="ct">Actions</div><div style="display:flex;flex-direction:column;gap:8px"><button class="btn btn-gy" onclick="openSoldModal()">&#9870; Mark as Sold</button><button class="btn btn-gn" onclick="confirmDeliverVS()">&#127881; Deliver to Customer</button></div></div>';
+  h+='<div class="ct mt8">Movement History</div><div class="card" id="vsHist">'+emH('','Loading...','')+'</div>';
+  $('vsBody').innerHTML = h;
+  try {
+    var hist = await AGET({action:'getChassisHistory',chassis:v.chassis});
+    var he = $('vsHist');
+    if(he&&hist.success&&hist.history&&hist.history.length) {
+      he.innerHTML = hist.history.map(function(r){
+        var act=(r.action||'').toLowerCase();
+        var cls=act.indexOf('deliver')>=0?'dlv':act.indexOf('receipt')>=0||act.indexOf('receive')>=0?'recv':act.indexOf('arrival')>=0?'arr':'disp';
+        var colors={disp:'var(--tr)',recv:'var(--gn)',arr:'var(--bl)',dlv:'var(--pu)'};
+        return '<div class="hist-it"><div class="hi-dot" style="background:'+( colors[cls]||'var(--g2)')+'"></div><div style="flex:1"><div style="font-size:13px;font-weight:600">'+(r.action||cls)+'</div><div style="font-size:11px;color:var(--g4);margin-top:2px">'+(r.from?r.from+' \u2192 ':'')+(r.to||'')+(r.staff?' \u00b7 '+r.staff:'')+'</div><div style="font-size:11px;color:var(--g4)">'+(r.time||'')+'</div></div></div>';
+      }).join('');
+    } else if(he) he.innerHTML=emH('','No history found','');
+  } catch(e) {}
+}
+async function doVSMove() {
+  if(!activeV) return;
+  if(!vsLocSel){sal('vsErr','&#9888; Select destination.');return;}
+  var drv=gv('vsDr');if(!drv){sal('vsErr','&#9888; Driver name required.');return;}
+  hal('vsErr');showLoad('Dispatching...');
+  try {
+    var r = await APOST({action:'logMovement',chassis:activeV.chassis,model:activeV.model||'',variant:activeV.variant||'',suffix:activeV.suffix||'',fuel:activeV.fuel||'',from:activeV.location||'Unknown',to:vsLocSel,staff:U.name,role:U.role,driverName:drv,remarks:gv('vsRm'),via:'PWA',timestamp:nowISO()});
+    hideLoad();
+    if(r.success||r.offline) {
+      pushRecent({chassis:activeV.chassis,from:activeV.location,to:vsLocSel});
+      var stk=allStock.find(function(x){return x.chassis===activeV.chassis;});
+      if(stk){stk.location=vsLocSel;stk.status='In Transit';}
+      closeVS();
+      showSucc('&#128663;','Dispatched!','Vehicle is now In Transit.',[{k:'Chassis',v:activeV.chassis},{k:'To',v:vsLocSel},{k:'Driver',v:drv}]);
+      loadAllStock();
+    } else sal('vsErr','\u274c '+(r.error||'Failed'));
+  } catch(e) { hideLoad(); sal('vsErr','\u274c '+e.message); }
+}
+function confirmDeliverVS() {
+  if(!activeV||!confirm('Deliver '+activeV.chassis+' to customer? Cannot be undone.')) return;
+  showLoad('Delivering...');closeVS();
+  APOST({action:'deliverVehicle',chassis:activeV.chassis,deliveredBy:U.name,timestamp:nowISO()}).then(function(r){
+    hideLoad();
+    if(r.success){showSucc('&#127881;','Delivered!','Vehicle removed from stock.',[{k:'Chassis',v:activeV.chassis}]);loadAllStock();}
+    else alert('Failed: '+(r.error||'Unknown'));
+  }).catch(function(e){hideLoad();alert('Error: '+e.message);});
+}
+
+// ── MOVEMENT TAB ──
+function mvPick(el,loc) {
+  mvLocSel=loc;
+  ['Stockyard','Workshop','Showroom'].forEach(function(l){var t=$('mvL_'+l);if(t)t.classList.remove('on');});
+  el.classList.add('on');
+}
+async function doMove() {
+  var chassis=gv('mvCh').toUpperCase(), drv=gv('mvDr');
+  if(!chassis){sal('mvErr','&#9888; Chassis required.');return;}
+  if(!mvLocSel){sal('mvErr','&#9888; Select destination.');return;}
+  if(!drv){sal('mvErr','&#9888; Driver name required.');return;}
+  hal('mvErr');showLoad('Dispatching...');
+  var destToShow=mvLocSel;
+  try {
+    var v=allStock.find(function(x){return x.chassis===chassis;});
+    var r=await APOST({action:'logMovement',chassis:chassis,model:v?v.model:'',variant:v?v.variant:'',suffix:v?v.suffix||'':'',fuel:v?v.fuel||'':'',from:v?v.location||'Unknown':'Unknown',to:mvLocSel,staff:U.name,role:U.role,driverName:drv,remarks:gv('mvRm'),via:'PWA',timestamp:nowISO()});
+    hideLoad();
+    if(r.success||r.offline) {
+      pushRecent({chassis:chassis,from:v?v.location:'Unknown',to:destToShow});
+      if(v){v.location=mvLocSel;v.status='In Transit';}
+      sv('mvCh','');sv('mvDr','');sv('mvRm','');
+      mvLocSel='';
+      ['Stockyard','Workshop','Showroom'].forEach(function(l){var t=$('mvL_'+l);if(t)t.classList.remove('on');});
+      showSucc('&#128663;','Dispatched!','Vehicle is now In Transit.',[{k:'Chassis',v:chassis},{k:'To',v:destToShow},{k:'Driver',v:drv}]);
+    } else sal('mvErr','\u274c '+(r.error||'Failed'));
+  } catch(e) { hideLoad(); sal('mvErr','\u274c '+e.message); }
+}
+function pushRecent(data) {
+  recentMoves.unshift({chassis:data.chassis,from:data.from,to:data.to,staff:U.name,time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})});
+  if(recentMoves.length>20) recentMoves.pop();
+  try{localStorage.setItem('pt_rcnt',JSON.stringify(recentMoves));}catch(e){}
+  renderRecent();
+}
+function renderRecent() {
+  var el=$('recentList');if(!el)return;
+  if(!recentMoves.length){el.innerHTML=emH('','No recent movements','');return;}
+  el.innerHTML=recentMoves.slice(0,10).map(function(m){
+    return '<div class="rcnt"><div style="width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0"></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;font-family:monospace">'+m.chassis+'</div><div style="font-size:11px;color:var(--g4);margin-top:2px">'+(m.from||'?')+' \u2192 '+(m.to||'?')+' \u00b7 '+(m.staff||'')+'</div></div><div style="font-size:10px;color:var(--g4);flex-shrink:0">'+(m.time||'')+'</div></div>';
+  }).join('');
+}
+function dlvLookup() {
+  var chassis=gv('dlvCh').toUpperCase();
+  $('dlvPrev').innerHTML='';hal('dlvErr');
+  if(!chassis) return;
+  var v=allStock.find(function(x){return x.chassis===chassis;});
+  if(!v) return;
+  if(v.status==='Delivered'){$('dlvPrev').innerHTML='<div class="al al-warn" style="display:flex">Already marked Delivered.</div>';return;}
+  var loc=v.status==='In Transit'?'In Transit':(v.location||'Unknown');
+  $('dlvPrev').innerHTML='<div class="v-hero" style="margin-bottom:0"><div style="font-size:18px;font-weight:900;color:white">'+v.model+' '+v.variant+'</div><div style="font-size:12px;color:#FF7070;margin-top:3px">'+(v.suffix||'')+'</div><div style="margin-top:8px">'+locPill(loc)+'</div></div>';
+}
+async function doDeliver() {
+  var chassis=gv('dlvCh').toUpperCase();hal('dlvErr');
+  if(!chassis){sal('dlvErr','&#9888; Enter or scan chassis.');return;}
+  var v=allStock.find(function(x){return x.chassis===chassis;});
+  if(!v){sal('dlvErr','&#9888; Chassis not found in stock.');return;}
+  if(v.status==='Delivered'){sal('dlvErr','&#9888; Already marked Delivered.');return;}
+  if(!confirm('Deliver '+chassis+' to customer? Cannot be undone.')) return;
+  showLoad('Delivering...');
+  try {
+    var r=await APOST({action:'deliverVehicle',chassis:chassis,deliveredBy:U.name,timestamp:nowISO()});
+    hideLoad();
+    if(r.success){sv('dlvCh','');$('dlvPrev').innerHTML='';showSucc('&#127881;','Delivered!','Vehicle removed from stock.',[{k:'Chassis',v:chassis}]);loadAllStock();}
+    else sal('dlvErr','\u274c '+(r.error||'Failed'));
+  } catch(e) { hideLoad();sal('dlvErr','\u274c '+e.message); }
+}
+
+// ── TRANSIT / RECEIVE ──
+async function loadTransits() {
+  var el=$('transitList');el.innerHTML=emH('','Loading...','');
+  try {
+    var d=await AGET({action:'getPendingTransits'});
+    var pending=d.transits||d.pending||[];
+    if(!d.success||!pending.length){el.innerHTML=emH('✅','No vehicles in transit','');return;}
+    el.innerHTML=pending.map(function(v){
+      return '<div class="tc"><div style="font-size:15px;font-weight:800">'+v.model+' '+v.variant+'</div><div style="font-size:12px;font-family:monospace;opacity:.75;margin-top:3px">'+v.chassis+'</div><div style="font-size:11px;opacity:.7;margin-top:6px">From: '+(v.from||'?')+' \u2192 '+(v.to||'?')+' | Driver: '+(v.staff||'?')+'</div><button class="tc-btn" onclick="openRcv(\''+v.chassis+'\')">&#128229; Confirm Receipt</button></div>';
+    }).join('');
+  } catch(e) { el.innerHTML=emH('⚠️','Error loading','Check connection'); }
+}
+function openRcv(chassis) {
+  rcvCh=chassis;
+  var v=allStock.find(function(x){return x.chassis===chassis;})||{chassis:chassis,model:'Vehicle'};
+  $('rcvCard').innerHTML='<div style="font-size:18px;font-weight:900;color:white">'+(v.model||'Vehicle')+' '+(v.variant||'')+'</div><div style="font-size:11px;font-family:monospace;opacity:.5;margin-top:6px;color:white;letter-spacing:1px">'+chassis+'</div>';
+  sv('rcvDr','');sv('rcvCond','');hal('rcvErr');
+  openOL('rcvOL');
+}
+async function confirmRcv() {
+  var drv=gv('rcvDr');if(!drv){sal('rcvErr','&#9888; Driver name required.');return;}
+  hal('rcvErr');showLoad('Confirming receipt...');
+  var v=allStock.find(function(x){return x.chassis===rcvCh;});
+  try {
+    var r=await APOST({action:'receiveVehicle',chassis:rcvCh,to:(v&&v.transitTo)||'Stockyard',from:(v&&v.location)||'',suffix:(v&&v.suffix)||'',model:(v&&v.model)||'',variant:(v&&v.variant)||'',fuel:(v&&v.fuel)||'',receivedBy:U.name,driverName:drv,condition:gv('rcvCond'),staff:U.name,role:U.role,timestamp:nowISO()});
+    hideLoad();closeOL('rcvOL');
+    if(r.success){showSucc('&#128229;','Received!','Transit confirmed.',[{k:'Chassis',v:rcvCh},{k:'Driver',v:drv}]);loadTransits();loadAllStock();}
+    else alert('Failed: '+(r.error||'Unknown'));
+  } catch(e) { hideLoad();alert('Error: '+e.message); }
+}
+
+// ── STOCK SEARCH ──
+function setF(f,el) {
+  stkFil=f;
+  document.querySelectorAll('#tabStock .frow .fc').forEach(function(c){c.classList.remove('on');});
+  if(el) el.classList.add('on');
+  renderStock();
+}
+function renderStock() {
+  var el=$('stockList');if(!el)return;
+  var q=gv('sQ').toLowerCase();
+  var items=allStock.filter(function(v){return v.status!=='Delivered';});
+  if(stkFil==='Stockyard') items=items.filter(function(v){return v.location==='Stockyard'&&v.status!=='In Transit';});
+  else if(stkFil==='Workshop') items=items.filter(function(v){return v.location==='Workshop'&&v.status!=='In Transit';});
+  else if(stkFil==='Showroom') items=items.filter(function(v){return v.location==='Showroom'&&v.status!=='In Transit';});
+  else if(stkFil==='In Transit') items=items.filter(function(v){return v.status==='In Transit';});
+  else if(stkFil==='TKM Billed') items=items.filter(function(v){return v.status==='TKM Billed';});
+  else if(stkFil==='Allocated') items=items.filter(function(v){return v.allocatedTo&&v.allocatedTo.trim();});
+  if(q) items=items.filter(function(v){return[(v.chassis||''),(v.model||''),(v.variant||''),(v.colour||''),(v.suffix||''),(v.allocatedTo||'')].some(function(s){return s.toLowerCase().includes(q);});});
+  if(!items.length){el.innerHTML=emH('&#128269;','No vehicles found','');var dr=$('dlRow');if(dr)dr.style.display='none';return;}
+  el.innerHTML=items.map(function(v){return buildCR(v,false);}).join('');
+  var dr=$('dlRow');if(dr)dr.style.display='flex';
+}
+
+// ── GATE ENTRY ──
+function openGE() {
+  GE={src:'TKM',loc:'Stockyard'};
+  $('geSrc_TKM').className='src-btn on';$('geSrc_CoDealer').className='src-btn';
+  hide('geCoDlr');sv('geCoDlr','');
+  ['geCh','geDriver','geRem'].forEach(function(id){sv(id,'');});
+  sv('geDispatch',today());sv('geSuffix','');$('geSuffix').className='if';
+  ['Stockyard','Workshop','Showroom'].forEach(function(l){var t=$('geLoc_'+l);if(t)t.classList.toggle('on',l==='Stockyard');});
+  hal('geErr');
+  if(sfxData.length) fillModels('ge');else loadSfx().then(function(){fillModels('ge');});
+  ['geVariant','geFuel','geColour','geInterior'].forEach(function(id){pDD(id,[],'--');});
+  openOL('geOL');
+}
+function geSrc(src) {
+  GE.src=src;
+  $('geSrc_TKM').className='src-btn'+(src==='TKM'?' on':'');
+  $('geSrc_CoDealer').className='src-btn'+(src==='Co-Dealer'?' on':'');
+  if(src==='Co-Dealer') show('geCoDlr'); else hide('geCoDlr');
+}
+function geLoc(el,loc) {
+  GE.loc=loc;
+  ['Stockyard','Workshop','Showroom'].forEach(function(l){var t=$('geLoc_'+l);if(t)t.classList.remove('on');});
+  el.classList.add('on');
+}
+async function confirmGE() {
+  var chassis=gv('geCh').toUpperCase(),model=gv('geModel'),variant=gv('geVariant'),fuel=gv('geFuel'),colour=gv('geColour'),interior=gv('geInterior'),suffix=gv('geSuffix'),drv=gv('geDriver'),dispatch=gv('geDispatch'),rem=gv('geRem'),coDlr=gv('geCoDlr');
+  if(!chassis){sal('geErr','&#9888; Chassis required.');return;}
+  if(!model||!variant||!fuel||!colour||!interior){sal('geErr','&#9888; Fill all vehicle specs.');return;}
+  if(!drv){sal('geErr','&#9888; Driver name required.');return;}
+  if(GE.src==='Co-Dealer'&&!coDlr){sal('geErr','&#9888; Co-dealer name required.');return;}
+  hal('geErr');closeOL('geOL');showLoad('Registering...');
+  try {
+    var r=await APOST({action:'addNewVehicle',chassis:chassis,model:model,variant:variant,fuel:fuel,colour:colour,interior:interior,suffix:suffix,dispatch:dispatch||today(),arrival:today(),location:GE.loc,status:'In Stock',source:GE.src,coDealerName:coDlr,driverName:drv,receivedBy:U.name,gateEntry:true,remarks:rem,timestamp:nowISO()});
+    hideLoad();
+    if(r.success||r.offline) showSucc('&#128663;','Registered!',model+' '+variant+' arrived at '+GE.loc,[{k:'Chassis',v:chassis},{k:'Suffix',v:suffix||'auto'},{k:'Colour',v:colour},{k:'Location',v:GE.loc}]);
+    else alert('Failed: '+(r.error||'Unknown'));
+    loadAllStock();
+  } catch(e) { hideLoad();alert('Error: '+e.message); }
+}
+
+// ── TKM BILLED ──
+function openTkm() {
+  if(!canTkm()) return;
+  ['tbCh','tbInv'].forEach(function(id){sv(id,'');});
+  sv('tbDate',today());sv('tbSuffix','');$('tbSuffix').className='if';
+  hal('tbErr');
+  if(sfxData.length) fillModels('tb');else loadSfx().then(function(){fillModels('tb');});
+  ['tbVariant','tbFuel','tbColour','tbInterior'].forEach(function(id){pDD(id,[],'--');});
+  openOL('tkmOL');
+}
+async function confirmTkm() {
+  var chassis=gv('tbCh').toUpperCase(),model=gv('tbModel'),variant=gv('tbVariant'),fuel=gv('tbFuel'),colour=gv('tbColour'),interior=gv('tbInterior'),suffix=gv('tbSuffix'),billDate=gv('tbDate'),inv=gv('tbInv');
+  if(!chassis){sal('tbErr','&#9888; Chassis required.');return;}
+  if(!model||!variant||!fuel||!colour||!interior){sal('tbErr','&#9888; Fill all specs.');return;}
+  if(!billDate){sal('tbErr','&#9888; Billing date required.');return;}
+  hal('tbErr');closeOL('tkmOL');showLoad('Registering TKM Billed...');
+  try {
+    var r=await APOST({action:'addTKMBilled',chassis:chassis,model:model,variant:variant,fuel:fuel,colour:colour,interior:interior,suffix:suffix,billingDate:billDate,invoiceNo:inv,billedBy:U.name,timestamp:nowISO()});
+    hideLoad();
+    if(r.success||r.offline) showSucc('&#128203;','TKM Billed Registered!','Awaiting physical arrival.',[{k:'Chassis',v:chassis},{k:'Model',v:model+' '+variant}]);
+    else alert('Failed: '+(r.error||'Unknown'));
+    loadAllStock();
+  } catch(e) { hideLoad();alert('Error: '+e.message); }
+}
+function openTkmList() {
+  var items=allStock.filter(function(v){return v.status==='TKM Billed';});
+  $('tkmListBody').innerHTML=items.length?items.map(function(v){
+    return '<div class="ccard"><div style="font-size:13px;font-family:monospace;font-weight:700">'+v.chassis+'</div><div style="font-size:11px;color:var(--red);margin-top:2px">'+v.model+' '+v.variant+' '+(v.suffix||'')+'</div><div style="display:flex;gap:4px;margin-top:6px"><span class="pill p-tk">TKM Billed</span><span style="font-size:11px;color:var(--g4);margin-left:4px">'+(v.colour||'')+(v.fuel?' \u00b7 '+v.fuel:'')+'</span></div><div style="font-size:11px;font-weight:700;color:var(--pu);margin-top:4px">Billed '+(v.days||0)+' days ago</div></div>';
+  }).join(''):emH('✅','No pending TKM vehicles','');
+  openOL('tkmListOL');
+}
+
+// ── ALLOCATION ──
+function openAllocModal() {
+  if(!activeV) return;
+  $('allocTitle').textContent=activeV.allocatedTo?'Update Allocation':'Allocate Vehicle';
+  $('allocCard').innerHTML='<div style="font-size:18px;font-weight:900;color:white">'+(activeV.model||'')+'</div><div style="font-size:13px;opacity:.65;margin-top:4px;color:white">'+(activeV.variant||'')+'</div><div style="font-size:12px;color:#FF7070;font-weight:700;margin-top:3px">'+(activeV.suffix||'')+'</div><div style="font-size:11px;font-family:monospace;opacity:.5;margin-top:6px;color:white">'+(activeV.chassis||'')+'</div>';
+  sv('alcCust',activeV.allocatedTo||'');sv('alcRef',activeV.allocBookingRef||'');sv('alcDate','');sv('alcRem','');
+  $('alcDate').min=today();hal('alcErr');
+  openOL('allocOL');
+}
+async function confirmAlloc() {
+  var cust=gv('alcCust'),ref=gv('alcRef'),date=gv('alcDate'),rem=gv('alcRem');
+  if(!cust){sal('alcErr','&#9888; Customer name required.');return;}
+  if(!date){sal('alcErr','&#9888; Delivery date required.');return;}
+  hal('alcErr');closeOL('allocOL');showLoad('Allocating...');
+  try {
+    var r=await APOST({action:'allocateVehicle',chassis:activeV.chassis,allocatedTo:cust,allocBookingRef:ref,allocDeliveryDate:date,allocRemarks:rem,allocatedBy:U.name,timestamp:nowISO()});
+    hideLoad();
+    if(r.success||r.offline) {
+      activeV.allocatedTo=cust;activeV.allocBookingRef=ref;
+      var stk=allStock.find(function(x){return x.chassis===activeV.chassis;});if(stk){stk.allocatedTo=cust;stk.allocBookingRef=ref;}
+      showSucc('&#128278;','Allocated!',cust+' \u2014 '+activeV.model+' '+activeV.variant,[{k:'Chassis',v:activeV.chassis},{k:'Customer',v:cust},{k:'Delivery',v:date}]);
+      if(curTab==='Stock') renderStock();
+    } else alert('Failed: '+(r.error||'Unknown'));
+  } catch(e) { hideLoad();alert('Error: '+e.message); }
+}
+async function doDealloc(chassis) {
+  if(!confirm('Remove allocation for '+chassis+'?')) return;
+  showLoad('Removing allocation...');
+  try {
+    var r=await APOST({action:'deallocateVehicle',chassis:chassis,deallocBy:U.name,timestamp:nowISO()});
+    hideLoad();
+    if(r.success||r.offline){
+      var v=allStock.find(function(x){return x.chassis===chassis;});if(v){v.allocatedTo='';v.allocBookingRef='';}
+      showSucc('✅','De-allocated','Vehicle is now available.',[{k:'Chassis',v:chassis}]);
+      if(curTab==='Stock') renderStock();
+    } else alert('Failed: '+(r.error||'Unknown'));
+  } catch(e) { hideLoad();alert('Error: '+e.message); }
+}
+
+// ── SOLD ──
+function openSoldModal() {
+  if(!activeV) return;
+  $('soldCard').innerHTML='<div style="font-size:18px;font-weight:900;color:white">'+(activeV.model||'')+' '+(activeV.variant||'')+'</div><div style="font-size:11px;font-family:monospace;opacity:.5;margin-top:6px;color:white">'+(activeV.chassis||'')+'</div>';
+  sv('soldRef','');sv('soldRem','');hal('soldErr');openOL('soldOL');
+}
+async function confirmSold() {
+  var ref=gv('soldRef');if(!ref){sal('soldErr','&#9888; Booking ref / customer required.');return;}
+  hal('soldErr');closeOL('soldOL');showLoad('Updating...');
+  try {
+    var r=await APOST({action:'markAsSold',chassis:activeV.chassis,model:activeV.model,variant:activeV.variant,bookingRef:ref,soldBy:U.name,remarks:gv('soldRem'),timestamp:nowISO()});
+    hideLoad();
+    if(r.success) showSucc('⚐','Marked Sold','Status updated.',[{k:'Chassis',v:activeV.chassis},{k:'Booking',v:ref}]);
+    else alert('Failed: '+(r.error||'Unknown'));
+    loadAllStock();
+  } catch(e) { hideLoad();alert('Error: '+e.message); }
+}
+
+// ── BULK TRAILER ──
+function openTrailer() {
+  TS={step:1,src:'TKM',loc:'Stockyard',det:{},vehs:[]};
+  ['tsTrailer','tsTransp','tsDrvNm','tsRem','tsCoDlr'].forEach(function(id){sv(id,'');});
+  sv('tsDrvMob','');sv('tsDT',new Date().toISOString().slice(0,16));
+  hide('tsCoDlr');
+  $('tsSrc_TKM').className='src-btn on';$('tsSrc_CoDealer').className='src-btn';
+  ['Stockyard','Workshop','Showroom'].forEach(function(l){var e=$('tsLoc_'+l);if(e)e.classList.toggle('on',l==='Stockyard');});
+  hal('tsS1Err');
+  if(sfxData.length) fillModels('tv');else loadSfx().then(function(){fillModels('tv');});
+  ['tvVariant','tvFuel','tvColour','tvInterior'].forEach(function(id){pDD(id,[],'--');});
+  ['tvCh','tvRem'].forEach(function(id){sv(id,'');});
+  sv('tvSuffix','');$('tvSuffix').className='if';sv('tvDispatch',today());
+  tsGo(1);$('TS').classList.add('open');
+}
+function tsSrc(src) {
+  TS.src=src;
+  $('tsSrc_TKM').className='src-btn'+(src==='TKM'?' on':'');
+  $('tsSrc_CoDealer').className='src-btn'+(src==='Co-Dealer'?' on':'');
+  if(src==='Co-Dealer') show('tsCoDlr');else hide('tsCoDlr');
+}
+function tsLoc(el,loc) {
+  TS.loc=loc;
+  ['Stockyard','Workshop','Showroom'].forEach(function(l){var t=$('tsLoc_'+l);if(t)t.classList.remove('on');});
+  el.classList.add('on');
+}
+function tsGo(step) {
+  TS.step=step;
+  [1,2,3].forEach(function(s) {
+    var p=$('tsS'+s);if(p)p.className=s===step?'':'hidden';
+    var nc=$('tsN'+s),lc=$('tsL'+s);
+    if(nc){nc.className='stc'+(s<step?' done':s===step?' act':'');nc.textContent=s<step?'\u2713':String(s);}
+    if(lc)lc.className='stl'+(s===step?' act':'');
+  });
+  [1,2].forEach(function(s){var ln=$('tsLn'+s);if(ln)ln.className='sline'+(s<step?' done':'');});
+  var bk=$('tsBtnBack'),nx=$('tsBtnNext');
+  bk.textContent=step===1?'Cancel':'\u2190 Back';
+  nx.textContent=step===1?'Next \u203a':step===2?'Review ('+TS.vehs.length+' vehicles)':'\u2713 Register All';
+  nx.style.background=step===3?'#064E3B':'';
+  if(step===2)renderTsS2();if(step===3)renderTsS3();
+}
+function tsNext() {
+  if(TS.step===1) tsVal1();
+  else if(TS.step===2){if(!TS.vehs.length){sal('tsS2Err','&#9888; Add at least one vehicle.');return;}tsGo(3);}
+  else tsSubmit();
+}
+function tsBack() { if(TS.step===1)$('TS').classList.remove('open');else tsGo(TS.step-1); }
+function tsVal1() {
+  if(!gv('tsTrailer')){sal('tsS1Err','&#9888; Trailer number required.');return;}
+  if(!gv('tsTransp')){sal('tsS1Err','&#9888; Transporter required.');return;}
+  if(!gv('tsDrvNm')){sal('tsS1Err','&#9888; Driver name required.');return;}
+  if(gv('tsDrvMob').length!==10){sal('tsS1Err','&#9888; Mobile must be 10 digits.');return;}
+  if(!gv('tsDT')){sal('tsS1Err','&#9888; Date & time required.');return;}
+  if(TS.src==='Co-Dealer'&&!gv('tsCoDlr')){sal('tsS1Err','&#9888; Co-dealer name required.');return;}
+  TS.det={trailerNo:gv('tsTrailer').toUpperCase(),transporter:gv('tsTransp'),driverName:gv('tsDrvNm'),driverMobile:gv('tsDrvMob'),reportingDT:gv('tsDT'),location:TS.loc,source:TS.src,coDealerName:TS.src==='Co-Dealer'?gv('tsCoDlr'):'',remarks:gv('tsRem'),receivedBy:U.name};
+  hal('tsS1Err');tsGo(2);
+}
+function renderTsS2() {
+  var td=TS.det;
+  $('tsBanner').innerHTML='<div style="font-size:10px;opacity:.5;text-transform:uppercase;margin-bottom:4px">Trailer In Progress</div><div style="font-size:18px;font-weight:900">'+td.trailerNo+'</div><div style="font-size:12px;opacity:.65;margin-top:4px">'+td.transporter+' \u00b7 '+td.driverName+'</div><div style="font-size:12px;opacity:.65">'+td.source+' \u2192 '+td.location+'</div>';
+  $('tsVList').innerHTML=TS.vehs.map(function(v,i){
+    return '<div class="tvm"><div><div style="font-size:13px;font-weight:700">'+v.model+' '+v.variant+' <span style="color:var(--red)">'+v.suffix+'</span></div><div style="font-size:11px;font-family:monospace;color:var(--g4)">'+v.chassis+'</div></div><button style="background:var(--reds);color:var(--red);border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer" onclick="tsRmV('+i+')">&#10005;</button></div>';
+  }).join('');
+  $('tsAddTit').textContent='Add Vehicle #'+(TS.vehs.length+1);
+  $('tsBtnNext').textContent='Review ('+TS.vehs.length+' vehicles)';
+}
+function tsRmV(i) { TS.vehs.splice(i,1); renderTsS2(); }
+function tsAddVeh() {
+  var chassis=gv('tvCh').toUpperCase(),model=gv('tvModel'),variant=gv('tvVariant'),fuel=gv('tvFuel'),colour=gv('tvColour'),interior=gv('tvInterior'),suffix=gv('tvSuffix'),dispatch=gv('tvDispatch'),rem=gv('tvRem');
+  if(!chassis){sal('tvErr','&#9888; Chassis required.');return;}
+  if(!model||!variant||!fuel||!colour||!interior){sal('tvErr','&#9888; Fill all vehicle specs.');return;}
+  if(TS.vehs.find(function(v){return v.chassis===chassis;})){sal('tvErr','&#9888; Chassis already added.');return;}
+  hal('tvErr');
+  TS.vehs.push({chassis:chassis,model:model,variant:variant,fuel:fuel,colour:colour,interior:interior,suffix:suffix,dispatch:dispatch,remarks:rem});
+  sv('tvCh','');sv('tvRem','');sv('tvSuffix','');$('tvSuffix').className='if';
+  renderTsS2();
+}
+function renderTsS3() {
+  var td=TS.det;
+  $('tsFinalBanner').innerHTML='<div style="font-size:10px;opacity:.5;text-transform:uppercase;margin-bottom:4px">Ready to Register \u2014 '+TS.vehs.length+' Vehicles</div><div style="font-size:18px;font-weight:900">'+td.trailerNo+'</div><div style="font-size:12px;opacity:.65;margin-top:4px">'+td.transporter+' \u00b7 '+td.driverName+'</div>';
+  $('tsFinalList').innerHTML='<div class="ct">Vehicles ('+TS.vehs.length+')</div>'+TS.vehs.map(function(v,i){
+    return '<div class="tvm" style="cursor:default"><div><div style="font-size:13px;font-weight:700">'+v.model+' '+v.variant+' <span style="color:var(--red)">'+v.suffix+'</span></div><div style="font-size:11px;font-family:monospace;color:var(--g4)">'+v.chassis+' \u00b7 '+v.colour+'</div></div><span style="font-weight:800;color:var(--gn)">#'+(i+1)+'</span></div>';
+  }).join('');
+}
+async function tsSubmit() {
+  var td=TS.det,nx=$('tsBtnNext');nx.disabled=true;
+  showLoad('Registering '+TS.vehs.length+' vehicles...');
+  var ok=0,fail=0;
+  for(var i=0;i<TS.vehs.length;i++) {
+    var v=TS.vehs[i];
+    try { await APOST({action:'addNewVehicle',chassis:v.chassis,model:v.model,variant:v.variant,fuel:v.fuel,colour:v.colour,interior:v.interior,suffix:v.suffix,dispatch:v.dispatch||today(),arrival:today(),location:td.location,status:'In Stock',source:td.source,coDealerName:td.coDealerName,trailerNo:td.trailerNo,transporter:td.transporter,driverName:td.driverName,driverMobile:td.driverMobile,reportingDateTime:td.reportingDT,receivedBy:td.receivedBy,gateEntry:true,remarks:v.remarks||td.remarks||'',timestamp:nowISO()}); ok++; }
+    catch(e) { fail++; }
+  }
+  nx.disabled=false;hideLoad();$('TS').classList.remove('open');
+  showSucc('&#128667;',ok+' Vehicle'+(ok!==1?'s':'')+' Registered!','Trailer '+td.trailerNo,[{k:'Trailer',v:td.trailerNo},{k:'Registered',v:String(ok)}]);
+  loadAllStock();
+}
+
+// ── STAFF ──
+function openProf() {
+  if(!U) return;
+  $('profNm').textContent=U.name;$('profRl').textContent=U.role+' \u2014 Planet Toyota';
+  if(canStaff())show('piStaff');else hide('piStaff');
+  if(canAudit())show('piAudit');else hide('piAudit');
+  if(canSeeAlloc())show('piAllocAge');else hide('piAllocAge');
+  openOL('profOL');
+}
+function openStaff() { resetSF(); loadStaffList(); openOL('staffOL'); }
+async function loadStaffList() {
+  var el=$('staffList');el.innerHTML=emH('','Loading...','');
+  try {
+    var d=await AGET({action:'getStaffList'});
+    if(!d.success||!d.staff||!d.staff.length){el.innerHTML=emH('','No staff found','');return;}
+    _staffRows=d.staff;
+    var CS=['#EB0A1E','#1A1F3A','#059669','#2563EB','#F97316','#7C3AED'];
+    var RC={'owner':'#F59E0B','sales manager':'#2563EB','service manager':'#059669','edp':'#7C3AED','sales team leader':'#F97316','yard staff':'#22C55E'};
+    el.innerHTML=d.staff.map(function(s,i) {
+      var ini=s.name.split(' ').map(function(w){return w[0]||'';}).join('').substring(0,2).toUpperCase();
+      var inactive=(s.status||'').toLowerCase()==='inactive';
+      return '<div class="staff-it" style="'+(inactive?'opacity:.55':'')+'"><div class="sa" style="background:'+CS[i%CS.length]+'">'+ini+'</div><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:700">'+s.name+'</div><div style="display:flex;align-items:center;gap:6px;margin-top:3px"><span class="pill" style="background:'+(RC[(s.role||'').toLowerCase()]||'#888')+';color:white">'+s.role+'</span><span style="font-size:10px;font-weight:700;color:'+(inactive?'#aaa':'var(--gn)')+'">'+( inactive?'Inactive':'Active')+'</span></div></div><div style="display:flex;gap:5px"><button style="background:var(--bls);color:var(--bl);border:none;border-radius:6px;padding:6px 9px;font-size:12px;font-weight:700;cursor:pointer" onclick="sfEdit('+i+')">Edit</button>'+(inactive?'<button style="background:var(--gns);color:var(--gn);border:none;border-radius:6px;padding:6px 9px;font-size:12px;font-weight:700;cursor:pointer" onclick="sfToggle('+i+',\'Active\')">Activate</button>':'<button style="background:var(--reds);color:var(--red);border:none;border-radius:6px;padding:6px 9px;font-size:12px;font-weight:700;cursor:pointer" onclick="sfToggle('+i+',\'Inactive\')">Deactivate</button>')+'</div></div>';
+    }).join('');
+  } catch(e) { el.innerHTML=emH('','Error: '+e.message,''); }
+}
+function sfEdit(i) { var s=_staffRows[i];if(!s)return;editSF(s.row,s.name,s.role); }
+function sfToggle(i,status) { var s=_staffRows[i];if(!s)return;toggleSF(s.row,status,s.name); }
+function editSF(row,name,r) { $('sfTitle').textContent='Edit Staff';sv('sfName',name);$('sfRole').value=r;sv('sfPin','');$('sfPinLbl').textContent='New PIN (leave blank to keep)';sv('sfRow',String(row));hal('sfErr');hal('sfOk'); }
+function resetSF() { $('sfTitle').textContent='Add Staff';sv('sfName','');$('sfRole').value='';sv('sfPin','');$('sfPinLbl').textContent='PIN (4 digits) *';sv('sfRow','');hal('sfErr');hal('sfOk'); }
+async function saveStaff() {
+  var name=gv('sfName'),r=$('sfRole').value,pin=gv('sfPin').replace(/[^0-9]/g,''),row=gv('sfRow'),isEdit=!!row;
+  hal('sfErr');hal('sfOk');
+  if(!name){sal('sfErr','&#9888; Name required.');return;}
+  if(!r){sal('sfErr','&#9888; Role required.');return;}
+  if(!isEdit&&(!pin||pin.length!==4)){sal('sfErr','&#9888; 4-digit PIN required.');return;}
+  if(pin&&pin.length!==4){sal('sfErr','&#9888; PIN must be 4 digits.');return;}
+  showLoad(isEdit?'Updating...':'Adding...');
+  try {
+    var d=await APOST(isEdit?{action:'editStaff',row:parseInt(row),name:name,role:r,pin:pin||null}:{action:'addStaff',name:name,role:r,pin:pin});
+    hideLoad();
+    if(d.success){sal('sfOk','\u2705 '+(isEdit?'Updated!':name+' added!'));resetSF();setTimeout(function(){hal('sfOk');},3000);loadStaffList();}
+    else sal('sfErr','\u274c '+(d.error||'Failed'));
+  } catch(e) { hideLoad();sal('sfErr','\u274c '+e.message); }
+}
+async function toggleSF(row,status,name) {
+  if(!confirm((status==='Inactive'?'Deactivate':'Reactivate')+' '+name+'?')) return;
+  showLoad('Updating...');
+  try { var d=await APOST({action:'editStaff',row:parseInt(row),name:name,status:status});hideLoad();if(d.success)loadStaffList();else alert('Failed: '+(d.error||'Unknown')); }
+  catch(e) { hideLoad();alert('Error: '+e.message); }
+}
+function openCPin() { closeOL('profOL');closeOL('cpOL');openOL('cpOL'); }
+async function confirmCPin() {
+  var old=gv('cpOld'),nw=gv('cpNew'),cnf=gv('cpCnf');hal('cpErr');hal('cpOk');
+  if(!old||old.length!==4){sal('cpErr','&#9888; Current PIN must be 4 digits.');return;}
+  if(!nw||nw.length!==4){sal('cpErr','&#9888; New PIN must be 4 digits.');return;}
+  if(nw!==cnf){sal('cpErr','&#9888; New PINs do not match.');return;}
+  showLoad('Updating PIN...');
+  try {
+    var d=await APOST({action:'changePin',name:U.name,oldPin:old,newPin:nw,timestamp:nowISO()});
+    hideLoad();
+    if(d.success){sal('cpOk','\u2705 PIN updated!');sv('cpOld','');sv('cpNew','');sv('cpCnf','');}
+    else sal('cpErr','\u274c '+(d.error||'Failed'));
+  } catch(e) { hideLoad();sal('cpErr','\u274c '+e.message); }
+}
+
+// ── MOVEMENT LOG ──
+function openMovLog() {
+  mlFil='ALL';
+  document.querySelectorAll('#mlOL .fc').forEach(function(c){c.classList.remove('on');});
+  var fc=document.querySelector('#mlOL .fc');if(fc)fc.classList.add('on');
+  mlToday();openOL('mlOL');
+}
+function mlToday() { sv('mlDate',today());loadML(); }
+function mlType(t,el) { mlFil=t;document.querySelectorAll('#mlOL .fc').forEach(function(c){c.classList.remove('on');});if(el)el.classList.add('on');renderML(); }
+async function loadML() {
+  var dateVal=gv('mlDate'),el=$('mlList');
+  if(!dateVal){el.innerHTML=emH('','Select a date','');return;}
+  el.innerHTML=emH('','Loading...','');$('mlSub').textContent='Loading...';
+  try {
+    var d=await AGET({action:'getMovementLog',date:dateVal});
+    if(!d.success){el.innerHTML=emH('⚠️','Error: '+(d.error||'Failed'),'');return;}
+    mlData=d.movements||[];
+    $('mlSub').textContent=mlData.length+' movement'+(mlData.length!==1?'s':'')+' on '+dateVal;
+    renderML();
+  } catch(e) { el.innerHTML=emH('⚠️','Connection error',''); }
+}
+function renderML() {
+  var el=$('mlList');if(!el)return;
+  var q=gv('mlQ').toLowerCase();
+  var items=mlData.slice();
+  if(mlFil!=='ALL') items=items.filter(function(m){return m.type===mlFil;});
+  if(q) items=items.filter(function(m){return[(m.chassis||''),(m.staff||''),(m.modelVar||'')].some(function(s){return s.toLowerCase().includes(q);});});
+  if(!items.length){el.innerHTML=emH('','No movements match','');return;}
+  var TC={dispatch:'var(--tr)',receive:'var(--gn)',arrival:'var(--bl)',delivery:'var(--pu)'};
+  var TL={dispatch:'Dispatch',receive:'Received',arrival:'Arrival',delivery:'Delivered'};
+  el.innerHTML=items.map(function(m){
+    var c=TC[m.type]||'var(--g4)',l=TL[m.type]||m.type;
+    return '<div class="ml-row"><div style="width:8px;height:8px;border-radius:50%;background:'+c+';flex-shrink:0;margin-top:4px"></div><div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between"><span style="font-size:12px;font-family:monospace;font-weight:700">'+m.chassis+'</span><span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(0,0,0,.06)">'+l+'</span></div><div style="font-size:12px;color:var(--g6);margin-top:2px">'+(m.modelVar||'')+'</div><div style="font-size:11px;color:var(--g4);margin-top:2px">'+(m.from?m.from+' \u2192 '+(m.to||''):(m.to||''))+' \u00b7 '+(m.staff||'')+'</div></div><div style="font-size:10px;color:var(--g4);flex-shrink:0;text-align:right;min-width:64px">'+(m.timestamp||'')+'</div></div>';
+  }).join('');
+}
+
+// ── ALLOC AGING ──
+function openAllocAge() {
+  var items=allStock.filter(function(v){return v.allocatedTo&&v.allocatedTo.trim()&&v.status!=='Delivered';}).sort(function(a,b){return parseInt(b.days||0)-parseInt(a.days||0);});
+  $('allocAgeBody').innerHTML=items.length?
+    '<div class="al al-info" style="display:flex;margin-bottom:12px">Allocated vehicles sorted by age.</div>'
+    +items.map(function(v){
+      var d=parseInt(v.days)||0,col=d>=30?'var(--red)':d>=15?'var(--tr)':'var(--am)';
+      return '<div class="ccard"><div style="display:flex;justify-content:space-between;gap:8px"><div style="flex:1"><div style="font-size:13px;font-family:monospace;font-weight:700">'+v.chassis+'</div><div style="font-size:11px;color:var(--red);margin-top:2px">'+v.model+' '+v.variant+' '+(v.suffix||'')+'</div></div><div style="text-align:right;flex-shrink:0"><div style="font-size:22px;font-weight:900;color:'+col+'">'+d+'</div><div style="font-size:9px;color:var(--g4)">days old</div></div></div><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px"><span class="pill p-al">&#128100; '+v.allocatedTo+'</span> '+locPill(v.location||'Unknown')+'</div>'+(v.allocBookingRef?'<div style="font-size:11px;color:var(--g4);margin-top:3px">Ref: '+v.allocBookingRef+'</div>':'')+'<div style="display:flex;gap:6px;margin-top:8px"><button class="act act-mv" onclick="closeOL(\'allocAgeOL\');openVS(\''+v.chassis+'\')">View</button><button class="act act-fr" onclick="doDealloc(\''+v.chassis+'\')">&#10005; Free</button></div></div>';
+    }).join('')
+    :emH('✅','No active allocations','');
+  openOL('allocAgeOL');
+}
+
+// ── AUDIT ──
+function openAuditSetup() {
+  AU={scope:'ALL',items:[],extras:[],fil:'ALL'};
+  ['ALL','Stockyard','Workshop','Showroom'].forEach(function(s){var e=$('auSc_'+s);if(e)e.classList.toggle('on',s==='ALL');});
+  renderAuSetupSum();openOL('auSetupOL');
+}
+function auScope(el,scope) {
+  AU.scope=scope;
+  ['ALL','Stockyard','Workshop','Showroom'].forEach(function(s){var e=$('auSc_'+s);if(e)e.classList.remove('on');});
+  el.classList.add('on');renderAuSetupSum();
+}
+function getAuExp() {
+  return allStock.filter(function(v){
+    if(v.status==='Delivered'||v.status==='In Transit'||v.status==='TKM Billed') return false;
+    return AU.scope==='ALL'||v.location===AU.scope;
+  });
+}
+function renderAuSetupSum() {
+  var ex=getAuExp();
+  $('auSetupSum').innerHTML='<div style="font-size:13px;font-weight:700">'+(AU.scope==='ALL'?'Full Dealership':AU.scope)+'</div><div style="font-size:13px;color:var(--g6);margin-top:4px">'+ex.length+' vehicle'+(ex.length!==1?'s':'')+' expected</div>';
+}
+function startAudit() {
+  var ex=getAuExp();if(!ex.length){alert('No vehicles in scope.');return;}
+  AU.items=ex.map(function(v){return{chassis:v.chassis,model:v.model||'',variant:v.variant||'',suffix:v.suffix||'',colour:v.colour||'',location:v.location||'Unknown',status:'PENDING',tickedAt:''};});
+  AU.extras=[];AU.fil='ALL';
+  closeOL('auSetupOL');
+  $('auTitle').textContent=(AU.scope==='ALL'?'Full Dealership':AU.scope)+' Audit';
+  $('auSub').textContent='Started by '+U.name+' \u00b7 '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  sv('auManual','');
+  document.querySelectorAll('#AU .fc').forEach(function(c){c.classList.remove('on');});
+  var fc=document.querySelector('#AU .fc');if(fc)fc.classList.add('on');
+  renderAuList();$('AU').classList.add('open');
+}
+function exitAudit() {
+  var found=AU.items.filter(function(i){return i.status==='FOUND';}).length;
+  if(!AU.items.length||found===0||confirm('Exit audit? Progress will be lost.')) $('AU').classList.remove('open');
+}
+function auFil(f,el) { AU.fil=f;document.querySelectorAll('#AU .fc').forEach(function(c){c.classList.remove('on');});if(el)el.classList.add('on');renderAuList(); }
+function auManTick() { var ch=gv('auManual').toUpperCase();if(!ch)return;tickChassis(ch,false);sv('auManual',''); }
+function auScanDone(text) {
+  var item=AU.items.find(function(i){return i.chassis===text;});
+  if(item&&item.status==='FOUND'){alert('\u2705 '+text+' already marked Found.');return;}
+  if(item){if(confirm('\ud83d\udcf7 Scanned: '+text+'\n'+item.model+' '+item.variant+'\n\nMark as Found?'))tickChassis(text,false);return;}
+  var elsewhere=allStock.find(function(v){return v.chassis===text;});
+  var note=elsewhere?'System shows at '+(elsewhere.location||elsewhere.status||'Unknown')+', not in scope.':'Not in system.';
+  if(confirm('\u26a0 Scanned: '+text+'\n\n'+note+'\n\nLog as Unexpected?')) tickChassis(text,true);
+}
+function tickChassis(chassis,forceExtra) {
+  var item=AU.items.find(function(i){return i.chassis===chassis;});
+  if(item&&!forceExtra){if(item.status!=='FOUND'){item.status='FOUND';item.tickedAt=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});}}
+  else if(!item&&!AU.extras.find(function(e){return e.chassis===chassis;})){
+    var ev=allStock.find(function(v){return v.chassis===chassis;});
+    AU.extras.push({chassis:chassis,model:ev?ev.model:'',note:ev?'At '+(ev.location||ev.status||'Unknown'):'Not in system',tickedAt:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})});
+  }
+  renderAuList();
+}
+function auUnmark(chassis) { var item=AU.items.find(function(i){return i.chassis===chassis;});if(item){item.status='PENDING';item.tickedAt='';}renderAuList(); }
+function auRmExtra(chassis) { AU.extras=AU.extras.filter(function(e){return e.chassis!==chassis;});renderAuList(); }
+function renderAuList() {
+  var found=AU.items.filter(function(i){return i.status==='FOUND';}).length;
+  var pend=AU.items.length-found,extra=AU.extras.length;
+  $('auFound').textContent=found;$('auPend').textContent=pend;$('auExtra').textContent=extra;$('auTotal').textContent=AU.items.length;
+  var h='';
+  if(AU.fil==='EXTRA'){
+    h=extra?AU.extras.map(function(e){
+      return '<div class="ccard" style="border-left:3px solid var(--red)"><div style="display:flex;justify-content:space-between;gap:8px"><div style="flex:1"><div style="font-size:13px;font-family:monospace;font-weight:700">'+e.chassis+'</div><div style="font-size:11px;color:var(--red);margin-top:2px">'+(e.model||'Unknown')+'</div></div><span class="pill p-al">'+e.tickedAt+'</span></div><div style="font-size:11px;color:var(--g4);margin-top:5px">'+e.note+'</div><div style="margin-top:8px"><button class="act act-fr" onclick="auRmExtra(\''+e.chassis+'\')">&#10005; Remove</button></div></div>';
+    }).join(''):emH('','No unexpected vehicles','');
+  } else {
+    var items=AU.items;
+    if(AU.fil==='PENDING') items=items.filter(function(i){return i.status==='PENDING';});
+    if(AU.fil==='FOUND') items=items.filter(function(i){return i.status==='FOUND';});
+    h=items.length?items.map(function(v){
+      var isF=v.status==='FOUND';
+      return '<div class="ccard" style="'+(isF?'border-left:3px solid var(--gn)':'')+'"><div style="display:flex;justify-content:space-between;gap:8px"><div style="flex:1"><div style="font-size:13px;font-family:monospace;font-weight:700">'+v.chassis+'</div><div style="font-size:11px;color:var(--red);margin-top:2px">'+v.model+' '+v.variant+' '+v.suffix+'</div></div>'+(isF?'<span class="pill p-fr">\u2713 '+v.tickedAt+'</span>':'<span class="pill" style="background:var(--g1);color:var(--g6)">Pending</span>')+'</div><div style="font-size:11px;color:var(--g4);margin-top:4px">'+v.colour+' \u00b7 '+v.location+'</div><div style="margin-top:8px">'+(isF?'<button class="act act-fr" onclick="auUnmark(\''+v.chassis+'\')">&#10005; Unmark</button>':'<button class="act act-mv" onclick="tickChassis(\''+v.chassis+'\',false)">\u2713 Mark Found</button>')+'</div></div>';
+    }).join(''):emH('✅',AU.fil==='PENDING'?'All vehicles found!':'Nothing here','');
+  }
+  $('auList').innerHTML=h;
+}
+async function finishAudit() {
+  var found=AU.items.filter(function(i){return i.status==='FOUND';}),missing=AU.items.filter(function(i){return i.status==='PENDING';});
+  if(missing.length>0&&!confirm(missing.length+' vehicle(s) still pending. Submit anyway?')) return;
+  $('AU').classList.remove('open');showLoad('Submitting audit...');
+  try {
+    var r=await APOST({action:'submitAudit',scope:AU.scope,auditor:U.name,role:U.role,finishedAt:nowISO(),totalExpected:AU.items.length,foundCount:found.length,missingCount:missing.length,extraCount:AU.extras.length,foundList:found.map(function(v){return v.chassis;}),missingList:missing.map(function(v){return{chassis:v.chassis,model:v.model,variant:v.variant,location:v.location};}),extraList:AU.extras.map(function(e){return{chassis:e.chassis,note:e.note};}),timestamp:nowISO()});
+    hideLoad();showAuResult(found,missing,AU.extras,r&&r.success);
+  } catch(e) { hideLoad();showAuResult(found,missing,AU.extras,false); }
+}
+function showAuResult(found,missing,extras,saved) {
+  var pct=(found.length+missing.length)>0?Math.round(found.length/(found.length+missing.length)*100):100;
+  var h='<div style="background:linear-gradient(135deg,var(--dk),var(--nv));border-radius:var(--r);padding:18px;text-align:center;color:white;margin-bottom:12px"><div style="font-size:42px;font-weight:900">'+pct+'%</div><div style="font-size:11px;opacity:.5;text-transform:uppercase;letter-spacing:.8px;margin-top:4px">Verified</div></div>';
+  h+='<div class="sg"><div class="sc" style="cursor:default"><div class="sn" style="color:var(--gn)">'+found.length+'</div><div class="sl">\u2705 Found</div></div><div class="sc" style="cursor:default"><div class="sn" style="color:var(--red)">'+missing.length+'</div><div class="sl">&#10071; Missing</div></div></div>';
+  if(extras.length) h+='<div class="card"><div class="ct">Unexpected ('+extras.length+')</div>'+extras.map(function(e){return'<div class="rcnt"><div style="width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0"></div><div style="flex:1"><div style="font-size:13px;font-weight:700;font-family:monospace">'+e.chassis+'</div><div style="font-size:11px;color:var(--g4)">'+e.note+'</div></div></div>';}).join('')+'</div>';
+  if(missing.length) h+='<div class="card"><div class="ct">Missing ('+missing.length+')</div>'+missing.map(function(v){return'<div class="rcnt"><div style="width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0"></div><div style="flex:1"><div style="font-size:13px;font-weight:700;font-family:monospace">'+v.chassis+'</div><div style="font-size:11px;color:var(--g4)">'+v.model+' '+v.variant+' \u00b7 '+v.location+'</div></div></div>';}).join('')+'</div>';
+  h+=saved?'<div class="al al-ok" style="display:flex;margin-top:4px">\u2705 Audit saved.</div>':'<div class="al al-warn" style="display:flex;margin-top:4px">&#9888; Could not save to server.</div>';
+  $('auResBody').innerHTML=h;openOL('auResOL');
+}
+var _auHistData=[];
+async function loadAuHist() {
+  var el=$('auHistBody');el.innerHTML=emH('','Loading...','');
+  try {
+    var d=await AGET({action:'getAuditHistory'});
+    if(!d.success||!d.audits||!d.audits.length){el.innerHTML=emH('','No audits yet','');return;}
+    _auHistData=d.audits;
+    renderAuHist();
+  } catch(e) { el.innerHTML=emH('','Could not load history',''); }
+}
+function renderAuHist(){
+  var el=$('auHistBody');if(!el)return;
+  el.innerHTML=_auHistData.map(function(a,i){
+    var pct=a.totalExpected>0?Math.round(a.foundCount/a.totalExpected*100):100;
+    var bid='ah_'+i;
+    var h='<div class="card" style="margin-bottom:10px;padding:0;overflow:hidden">';
+    // Header row
+    h+='<div onclick="toggleAuHist(''+bid+'')" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;background:white">';
+    h+='<div><div style="font-size:14px;font-weight:700">'+(a.scope==='ALL'?'Full Dealership':a.scope)+'</div>';
+    h+='<div style="font-size:11px;color:var(--g4);margin-top:2px">'+(a.auditor||'')+' · '+(a.finishedAt||'')+'</div></div>';
+    h+='<div style="display:flex;align-items:center;gap:8px"><span class="pill" style="background:'+(pct===100?'var(--gns)':'#FEF3C7')+';color:'+(pct===100?'var(--gn)':'#92400E')+'">'+pct+'%</span><span style="font-size:12px;color:var(--g4)" id="'+bid+'a">▼</span></div></div>';
+    // Expandable body
+    h+='<div id="'+bid+'" style="display:none;padding:0 12px 14px">';
+    h+='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">';
+    h+='<span class="pill p-fr">✅ Found: '+a.foundCount+'</span>';
+    h+='<span class="pill" style="background:var(--reds);color:var(--red)">❌ Missing: '+(a.missingCount||0)+'</span>';
+    h+='<span class="pill p-al">&#10071; Extra: '+(a.extraCount||0)+'</span>';
+    h+='<button onclick="printAuHist('+i+')" style="background:var(--dk);color:white;border:none;border-radius:8px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer">&#128438; PDF</button>';
+    h+='</div>';
+    // Found list grouped by model
+    if(a.foundList&&a.foundList.length){
+      var models={};
+      a.foundList.forEach(function(ch){
+        var v=allStock.find(function(x){return x.chassis===ch;})||{chassis:ch,model:'Unknown',variant:'',suffix:''};
+        var m=v.model||'Unknown';
+        if(!models[m])models[m]=[];
+        models[m].push(v);
+      });
+      h+='<div style="font-size:11px;font-weight:700;color:var(--gn);text-transform:uppercase;margin-bottom:6px">✅ Found</div>';
+      Object.keys(models).sort().forEach(function(m){
+        var mid=bid+'_m_'+m.replace(/\s/g,'_');
+        h+='<div style="background:var(--gns);border-radius:8px;margin-bottom:6px;overflow:hidden">';
+        h+='<div onclick="toggleAuHist(''+mid+'')" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;cursor:pointer">';
+        h+='<span style="font-size:13px;font-weight:700">'+m+'</span>';
+        h+='<div style="display:flex;gap:6px;align-items:center"><span style="font-size:12px;font-weight:800;color:var(--gn)">'+models[m].length+'</span><span style="font-size:10px;color:var(--g4)" id="'+mid+'a">▼</span></div></div>';
+        h+='<div id="'+mid+'" style="display:none;padding:0 12px 8px">';
+        models[m].forEach(function(v){
+          h+='<div style="font-size:12px;font-family:monospace;padding:4px 0;border-bottom:1px solid rgba(0,0,0,.05)">'+v.chassis+'<span style="font-size:10px;color:var(--g6);margin-left:8px">'+(v.variant||'')+' '+(v.suffix||'')+'</span></div>';
+        });
+        h+='</div></div>';
+      });
+    }
+    // Missing list
+    if(a.missingList&&a.missingList.length){
+      h+='<div style="font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;margin:10px 0 6px">❌ Missing</div>';
+      a.missingList.forEach(function(v){
+        h+='<div class="ccard" style="border-left:3px solid var(--red);margin-bottom:6px">';
+        h+='<div style="font-size:13px;font-family:monospace;font-weight:700">'+(v.chassis||v)+'</div>';
+        h+='<div style="font-size:11px;color:var(--g4)">'+(v.model||'')+' '+(v.variant||'')+' '+(v.location?'· '+v.location:'')+'</div>';
+        h+='</div>';
+      });
+    }
+    h+='</div></div>';
+    return h;
+  }).join('');
+}
+function toggleAuHist(id){
+  var el=$(id),arr=$(id+'a');
+  if(!el)return;
+  var open=el.style.display==='block';
+  el.style.display=open?'none':'block';
+  if(arr)arr.textContent=open?'▼':'▲';
+}
+function printAuHist(i){
+  var a=_auHistData[i];if(!a)return;
+  var pct=a.totalExpected>0?Math.round(a.foundCount/a.totalExpected*100):100;
+  var w=window.open('','_blank');
+  var models={};
+  (a.foundList||[]).forEach(function(ch){
+    var v=allStock.find(function(x){return x.chassis===ch;})||{chassis:ch,model:'Unknown',variant:'',suffix:''};
+    var m=v.model||'Unknown';if(!models[m])models[m]=[];models[m].push(v);
+  });
+  var modelRows='';
+  Object.keys(models).sort().forEach(function(m){
+    modelRows+='<tr style="background:#F9FAFB"><td colspan="4" style="padding:8px 12px;font-weight:800;font-size:13px">'+m+' ('+models[m].length+')</td></tr>';
+    models[m].forEach(function(v,i){
+      modelRows+='<tr><td style="padding:6px 12px;font-size:12px">'+(i+1)+'</td><td style="padding:6px 12px;font-family:monospace;font-size:12px">'+v.chassis+'</td><td style="padding:6px 12px;font-size:12px">'+(v.variant||'')+' '+(v.suffix||'')+'</td><td style="padding:6px 12px;font-size:12px;color:green">✅ Found</td></tr>';
+    });
+  });
+  (a.missingList||[]).forEach(function(v,i){
+    modelRows+='<tr style="background:#FDE8EA"><td style="padding:6px 12px;font-size:12px">'+(i+1)+'</td><td style="padding:6px 12px;font-family:monospace;font-size:12px">'+(v.chassis||v)+'</td><td style="padding:6px 12px;font-size:12px">'+(v.model||'')+' '+(v.variant||'')+'</td><td style="padding:6px 12px;font-size:12px;color:red">❌ Missing</td></tr>';
+  });
+  w.document.write('<!DOCTYPE html><html><head><title>Audit Report</title><style>body{font-family:Arial,sans-serif;padding:20px}table{border-collapse:collapse;width:100%}th{background:#0F1117;color:white;padding:8px 12px;font-size:12px;text-align:left}td{border-bottom:1px solid #E5E7EB}@media print{button{display:none}}</style></head><body>');
+  w.document.write('<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px"><div><h2 style="margin:0;color:#EB0A1E">Planet Toyota — Stock Audit</h2><div style="font-size:13px;color:#6B7280;margin-top:4px">Narnaul, Dist. Mahendragarh</div></div><div style="text-align:right"><div style="font-size:22px;font-weight:900;color:'+(pct===100?'green':'#D97706')+'">'+pct+'%</div><div style="font-size:11px;color:#6B7280">Accuracy</div></div></div>');
+  w.document.write('<table style="margin-bottom:16px"><tr><th>Scope</th><th>Auditor</th><th>Date</th><th>Found</th><th>Missing</th><th>Extra</th></tr><tr><td style="padding:8px 12px">'+(a.scope==='ALL'?'Full Dealership':a.scope)+'</td><td style="padding:8px 12px">'+(a.auditor||'')+'</td><td style="padding:8px 12px">'+(a.finishedAt||'')+'</td><td style="padding:8px 12px;color:green;font-weight:700">'+a.foundCount+'</td><td style="padding:8px 12px;color:red;font-weight:700">'+(a.missingCount||0)+'</td><td style="padding:8px 12px;color:orange;font-weight:700">'+(a.extraCount||0)+'</td></tr></table>');
+  w.document.write('<table><tr><th>#</th><th>Chassis</th><th>Variant / Suffix</th><th>Status</th></tr>'+modelRows+'</table>');
+  w.document.write('<div style="margin-top:20px;font-size:11px;color:#9CA3AF">Generated on '+new Date().toLocaleString('en-IN')+' by Planet Toyota Stock Tracker PWA</div>');
+  w.document.write('<br><button onclick="window.print()" style="background:#0F1117;color:white;border:none;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">&#128438; Print / Save as PDF</button>');
+  w.document.write('</body></html>');
+  w.document.close();
+}
+
+// ── DAILY SUMMARY ──
+function setDailyToday() { sv('dailyDate',today());loadDaily(); }
+async function loadDaily() {
+  var dateVal=gv('dailyDate')||today();
+  $('dailyCont').innerHTML=emH('','Loading...','');
+  try {
+    var d=await AGET({action:'getDailySummary',date:dateVal});
+    if(!d||!d.success){$('dailyCont').innerHTML=emH('\u26a0','Failed',(d&&d.error)||'Server error')+retryBtn('loadDaily()');return;}
+    dailyData=d;renderDaily(d,dateVal);
+  } catch(e) { $('dailyCont').innerHTML=emH('\u26a0','Connection error',e.message); }
+}
+function renderDaily(d,dateVal) {
+  var dl=new Date(dateVal+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric',weekday:'short'});
+  var h='<div class="card" style="background:linear-gradient(135deg,var(--dk),var(--nv));border:none;padding:14px 16px"><div style="color:white;font-size:13px;font-weight:700">'+dl+'</div><div style="color:rgba(255,255,255,.45);font-size:11px;margin-top:2px">Stock Movement Summary</div></div>';
+  function fc(lbl,val,col,bg,fn){return'<div class="flow-card" style="background:'+bg+'" onclick="'+fn+'"><div class="flow-num" style="color:'+col+'">'+val+'</div><div class="flow-lbl">'+lbl+'</div><div style="font-size:10px;margin-top:3px;opacity:.55;color:'+col+'">Tap for details \u203a</div></div>';}
+  h+='<div class="sg">';
+  h+=fc('\ud83d\udce6 Opening',d.opening||0,'var(--dk)','#F7F8FA',"openDD('opening')");
+  h+=fc('\u2b07\ufe0f Inward','+'+(d.inward||0),'var(--gn)','#F0FFF4',"openDD('inward')");
+  h+=fc('\u2b06\ufe0f Outward','-'+(d.outward||0),'var(--red)','#FDE8EA',"openDD('outward')");
+  h+=fc('\ud83c\udfc1 Closing',d.closing||0,'var(--bl)','#EFF8FF',"openDD('closing')");
+  h+='</div>';
+  h+='<div class="sc tk" onclick="openDD(\'tkmBilled\')" style="cursor:pointer;display:block;margin-bottom:12px"><div class="sn">'+(d.tkmBilled||0)+'</div><div class="sl">&#128203; TKM Billed \u2014 Not Arrived</div></div>';
+  h+='<div class="card"><div class="ct">Model-wise Closing Stock</div>';
+  var models=d.modelBreakdown||[];
+  if(models.length){
+    var maxT=Math.max.apply(null,models.map(function(m){return m.total;}));
+    models.forEach(function(m){
+      var pct=maxT>0?Math.round(m.total/maxT*100):0;
+      var key=encodeURIComponent(m.model);
+      h+='<div class="mr" onclick="openDailyMD(\''+key+'\')" style="flex-direction:column;align-items:flex-start"><div style="display:flex;align-items:center;width:100%;gap:10px"><div class="mi"><div class="mn">'+m.model+'</div><div class="mb"><div class="mf" style="width:'+pct+'%"></div></div></div><div style="text-align:right;flex-shrink:0"><div style="font-size:26px;font-weight:900;letter-spacing:-.5px">'+m.total+'</div></div></div><div style="display:flex;gap:10px;margin-top:4px"><span style="font-size:10px;font-weight:700;color:#92400E">&#128278; '+m.allocated+'</span><span style="font-size:10px;font-weight:700;color:var(--gn)">\u2713 '+m.free+' Free</span></div></div>';
+    });
+  }else h+=emH('','No data','');
+  h+='</div>';
+  $('dailyCont').innerHTML=h;
+}
+function openDD(type) {
+  if(!dailyData) return;
+  var d=dailyData;
+  var map={
+    opening:{lbl:'Opening Stock',vs:d.openingDetails||d.closingDetails||[]},
+    inward:{lbl:'Inward — New Arrivals Only',vs:(d.inwardDetails||[]).filter(function(v){return !v.type||v.type==='arrival';})},
+    outward:{lbl:'Outward — Deliveries Only',vs:(d.outwardDetails||[]).filter(function(v){return !v.type||v.type==='delivery';})},
+    closing:{lbl:'Closing Stock',vs:d.closingDetails||[]},
+    tkmBilled:{lbl:'TKM Billed — Not Arrived',vs:d.tkmBilledDetails||[]}
+  };
+  var cfg=map[type];if(!cfg)return;
+  $('ddTitle').textContent=cfg.lbl;
+  $('ddSub').textContent=cfg.vs.length+' vehicle'+(cfg.vs.length!==1?'s':'');
+  var vm={};
+  cfg.vs.forEach(function(v){var m=v.model||'Unknown';if(!vm[m])vm[m]=[];vm[m].push(v);});
+  var h='';
+  Object.keys(vm).sort().forEach(function(m,mi){
+    var mid='ddm_'+type+'_'+mi;
+    h+='<div class="card" style="margin-bottom:8px;padding:0;overflow:hidden">';
+    h+='<div onclick="toggleDDM(''+mid+'')" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer">';
+    h+='<span style="font-size:15px;font-weight:800">'+m+'</span>';
+    h+='<div style="display:flex;align-items:center;gap:8px"><span style="background:var(--red);color:white;font-size:13px;font-weight:900;padding:3px 12px;border-radius:10px">'+vm[m].length+'</span><span style="font-size:12px;color:var(--g4)" id="'+mid+'a">▼</span></div></div>';
+    h+='<div id="'+mid+'" style="display:none;padding:0 12px 12px">';
+    vm[m].forEach(function(v){
+      var ab=v.allocatedTo!==undefined?(v.allocatedTo?'<span class="pill p-al">&#128100; '+v.allocatedTo+'</span>':'<span class="pill p-fr">Free</span>'):'';
+      h+='<div class="ccard" style="margin-top:8px">';
+      h+='<div style="font-size:13px;font-family:monospace;font-weight:700">'+v.chassis+'</div>';
+      h+='<div style="font-size:11px;color:var(--red);margin-top:2px">'+(v.variant||'')+' '+(v.suffix||'')+'</div>';
+      h+='<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">'+(v.location?locPill(v.location):'')+' '+ab+'</div>';
+      h+=(v.colour?'<div style="font-size:11px;color:var(--g4);margin-top:3px">'+v.colour+(v.fuel?' · '+v.fuel:'')+'</div>':'');
+      h+='</div>';
+    });
+    h+='</div></div>';
+  });
+  $('ddBody').innerHTML=h||emH('','No vehicles','');
+  openOL('ddOL');
+}
+function toggleDlv(){
+  var c=$('dlvCard');
+  if(!c)return;
+  c.classList.toggle('hidden');
+}
+function toggleDDM(id){
+  var el=$(id),arr=$(id+'a');
+  if(!el)return;
+  var open=el.style.display==='block';
+  el.style.display=open?'none':'block';
+  if(arr)arr.textContent=open?'▼':'▲';
+}
+
+function openDailyMD(key) {
+  if(!dailyData) return;
+  var modelName=decodeURIComponent(key);
+  var entry=(dailyData.modelBreakdown||[]).find(function(m){return m.model===modelName;});
+  if(!entry) return;
+  $('mdTitle').textContent=modelName;
+  $('mdSub').textContent=entry.total+' units \u2014 tap colour for chassis';
+  var colMap={};
+  (entry.vehicles||[]).forEach(function(v){var c=v.colour||'Unknown';if(!colMap[c])colMap[c]=[];colMap[c].push(v);});
+  var out='';
+  var cmEntries=Object.entries(colMap);
+  cmEntries.sort(function(x,y){
+    var xl=x[1].length, yl=y[1].length;
+    if(yl>xl) return 1;
+    if(yl<xl) return -1;
+    return 0;
+  });
+  cmEntries.forEach(function(ce) {
+    var colour=ce[0],vlist=ce[1];
+    var dk=(modelName+'_daily_'+colour).replace(/[^a-zA-Z0-9]/g,'_');
+    drillStore[dk]={colour:colour,variant:modelName,fuel:'',vehicles:vlist.map(function(v){return{chassis:v.chassis,model:modelName,variant:v.variant||'',suffix:v.suffix||'',colour:v.colour||'',location:v.location||'',fuel:v.fuel||'',allocatedTo:v.allocatedTo||'',days:''};})};
+    var an=vlist.filter(function(v){return v.allocatedTo;}).length;
+    var lc={};vlist.forEach(function(v){var l=v.location||'Unknown';lc[l]=(lc[l]||0)+1;});
+    var pills='';Object.entries(lc).forEach(function(le){var ls=LOCST[le[0]]||{bg:'#F3F4F6',fg:'#374151'};pills+='<span class="lqp" style="background:'+ls.bg+';color:'+ls.fg+'">'+le[0]+' <strong>'+le[1]+'</strong></span>';});
+    if(an) pills+='<span class="lqp" style="background:#FEF3C7;color:#92400E">Alloc <strong>'+an+'</strong></span>';
+    out+='<div class="clr-row" data-dk="'+dk+'" onclick="openCDbyKey(this.dataset.dk)"><div style="display:flex;align-items:center;gap:10px"><div class="csw" style="background:'+sw(colour)+'"></div><div><div style="font-size:13px;font-weight:600">'+colour+'</div><div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:3px">'+pills+'</div></div></div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="font-size:22px;font-weight:900">'+vlist.length+'</div></div></div>';
+  });
+  $('mdBody').innerHTML=out||emH('','No vehicles','');openOL('mdOL');
+}
+
+// ── SCANNER ──
+function openScan(targetId) {
+  scanTarget=targetId;scanOn=true;
+  $('scanSt').textContent='Starting camera...';
+  $('scanOv').classList.add('open');
+  if(typeof ZXing==='undefined'){$('scanSt').textContent='Scanner not loaded. Enter manually.';return;}
+  try {
+    scanReader=new ZXing.BrowserMultiFormatReader();
+    scanReader.listVideoInputDevices().then(function(devs){
+      if(!devs.length){$('scanSt').textContent='No camera found.';return;}
+      var devId=devs[0].deviceId;
+      var back=devs.find(function(d){return/back|rear|environment/i.test(d.label);});
+      if(back)devId=back.deviceId;
+      scanReader.decodeFromVideoDevice(devId,'scanVid',function(result,err){
+        if(!scanOn)return;
+        if(result){var text=result.getText().trim().toUpperCase();scanOn=false;closeScan();handleScan(text);}
+      });
+      $('scanSt').textContent='Point camera at chassis QR / barcode';
+    }).catch(function(e){$('scanSt').textContent='Camera error: '+e.message;});
+  } catch(e) { $('scanSt').textContent='Scanner error: '+e.message; }
+}
+function closeScan() {
+  scanOn=false;$('scanOv').classList.remove('open');
+  if(scanReader){try{scanReader.reset();}catch(e){}scanReader=null;}
+}
+function handleScan(text) {
+  if(scanTarget==='rcvScan'){
+    var v=allStock.find(function(x){return x.chassis===text||text.includes(x.chassis);});
+    if(v&&v.status==='In Transit')openRcv(v.chassis);
+    else alert('Scanned: '+text+'\n\nNo matching In Transit vehicle found.');
+    return;
+  }
+  if(scanTarget==='auScan'){auScanDone(text);return;}
+  if(scanTarget==='dlvCh'){sv('dlvCh',text);dlvLookup();return;}
+  var el=$(scanTarget);
+  if(el){el.value=text;el.dispatchEvent(new Event('input',{bubbles:true}));}
+}
+
+// ── DOWNLOADS ──
+function dlPDF(){
+  var items=getFilteredStock();
+  var title='Planet Toyota — Stock Report';
+  var subtitle=stkFil==='ALL'?'All Locations':stkFil;
+  var q=document.getElementById('sQ')?(document.getElementById('sQ').value||''):'';
+  if(q)subtitle+=' · Search: '+q;
+  // Group by location then model
+  var groups={};
+  items.forEach(function(v){
+    var loc=v.status==='In Transit'?'In Transit':(v.location||'Unknown');
+    if(!groups[loc])groups[loc]={};
+    var m=v.model||'Unknown';
+    if(!groups[loc][m])groups[loc][m]=[];
+    groups[loc][m].push(v);
+  });
+  var w=window.open('','_blank');
+  var rows='';
+  Object.keys(groups).sort().forEach(function(loc){
+    rows+='<tr style="background:#1A1F3A"><td colspan="7" style="padding:10px 12px;font-weight:900;font-size:14px;color:white">'+loc+' ('+Object.values(groups[loc]).reduce(function(s,a){return s+a.length;},0)+')</td></tr>';
+    Object.keys(groups[loc]).sort().forEach(function(m){
+      rows+='<tr style="background:#F3F4F6"><td colspan="7" style="padding:7px 12px;font-weight:800;font-size:13px;color:#1F2937">'+m+' ('+groups[loc][m].length+')</td></tr>';
+      groups[loc][m].forEach(function(v,i){
+        var al=v.allocatedTo?v.allocatedTo:'Free';
+        rows+='<tr><td style="padding:5px 10px;font-size:11px">'+(i+1)+'</td><td style="padding:5px 10px;font-family:monospace;font-size:11px">'+v.chassis+'</td><td style="padding:5px 10px;font-size:11px">'+v.variant+'</td><td style="padding:5px 10px;font-size:11px">'+(v.suffix||'')+'</td><td style="padding:5px 10px;font-size:11px">'+v.colour+'</td><td style="padding:5px 10px;font-size:11px">'+(v.days||0)+' days</td><td style="padding:5px 10px;font-size:11px">'+al+'</td></tr>';
+      });
+    });
+  });
+  w.document.write('<!DOCTYPE html><html><head><title>'+title+'</title><style>body{font-family:Arial,sans-serif;padding:20px;font-size:12px}table{border-collapse:collapse;width:100%}th{background:#0F1117;color:white;padding:8px 10px;font-size:11px;text-align:left}td{border-bottom:1px solid #E5E7EB}@media print{button{display:none}}</style></head><body>');
+  w.document.write('<div style="display:flex;justify-content:space-between;margin-bottom:16px"><div><h2 style="margin:0;color:#EB0A1E">'+title+'</h2><div style="color:#6B7280;margin-top:4px">'+subtitle+' · '+items.length+' vehicles · '+new Date().toLocaleDateString('en-IN')+'</div></div></div>');
+  w.document.write('<table><tr><th>#</th><th>Chassis</th><th>Variant</th><th>Suffix</th><th>Colour</th><th>Age</th><th>Allocation</th></tr>'+rows+'</table>');
+  w.document.write('<br><button onclick="window.print()" style="background:#0F1117;color:white;border:none;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">&#128438; Print / Save as PDF</button></body></html>');
+  w.document.close();
+}
+function dlExcel(){
+  var items=getFilteredStock();
+  var subtitle=stkFil==='ALL'?'All Locations':stkFil;
+  var hdr=['Location','Model','Chassis','Variant','Suffix','Colour','Fuel','Age (Days)','Status','Allocated To'];
+  var rows=[hdr];
+  items.forEach(function(v){
+    var loc=v.status==='In Transit'?'In Transit':(v.location||'Unknown');
+    rows.push([loc,v.model||'',v.chassis||'',v.variant||'',v.suffix||'',v.colour||'',v.fuel||'',v.days||0,v.status||'',v.allocatedTo||'']);
+  });
+  var csv=rows.map(function(r){return r.map(function(x){var s=String(x).split('"').join('""');return '"'+s+'"';}).join(',');}).join('\n');
+  var blob=new Blob([csv],{type:'text/csv'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download='PlanetToyota_Stock_'+subtitle.replace(/\s/g,'_')+'_'+today()+'.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function getFilteredStock(){
+  var q=(document.getElementById('sQ')?(document.getElementById('sQ').value||''):'').toLowerCase();
+  var items=allStock.filter(function(v){return v.status!=='Delivered';});
+  if(stkFil==='Stockyard') items=items.filter(function(v){return v.location==='Stockyard'&&v.status!=='In Transit';});
+  else if(stkFil==='Workshop') items=items.filter(function(v){return v.location==='Workshop'&&v.status!=='In Transit';});
+  else if(stkFil==='Showroom') items=items.filter(function(v){return v.location==='Showroom'&&v.status!=='In Transit';});
+  else if(stkFil==='In Transit') items=items.filter(function(v){return v.status==='In Transit';});
+  else if(stkFil==='TKM Billed') items=items.filter(function(v){return v.status==='TKM Billed';});
+  else if(stkFil==='Allocated') items=items.filter(function(v){return v.allocatedTo&&v.allocatedTo.trim();});
+  if(q) items=items.filter(function(v){return[(v.chassis||''),(v.model||''),(v.variant||''),(v.colour||''),(v.suffix||''),(v.allocatedTo||'')].some(function(s){return s.toLowerCase().includes(q);});});
+  return items;
+}
+
+// ── STARTUP ──
+window.onload = function() {
+  try {
+    var saved = JSON.parse(localStorage.getItem('pt_sess')||'null');
+    if(saved && saved.loginTime && (Date.now()-saved.loginTime) < 30*60*1000) {
+      U = saved;
+      try { recentMoves=JSON.parse(localStorage.getItem('pt_rcnt')||'[]'); } catch(e) {}
+      boot();
+      return;
+    }
+  } catch(e) {}
+  loadNames();
+};
+</script>
+</body>
+</html>
